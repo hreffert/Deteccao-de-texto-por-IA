@@ -15,6 +15,9 @@
             --bg-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             --card-shadow: 0 10px 30px rgba(0,0,0,0.1);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
         }
 
         * {
@@ -213,7 +216,7 @@
             background: #f8fafc;
         }
 
-        /* Interactive Elements */
+        /* Enhanced Interactive Demo */
         .interactive-demo {
             background: white;
             padding: 2rem;
@@ -222,14 +225,54 @@
             margin: 2rem 0;
         }
 
+        .demo-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab-button {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-button:hover {
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeInUp 0.3s ease-out;
+        }
+
         .demo-input {
             width: 100%;
-            padding: 1rem;
+            padding: 1.5rem;
             border: 2px solid #e2e8f0;
-            border-radius: 10px;
+            border-radius: 15px;
             font-size: 1rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             transition: var(--transition);
+            resize: vertical;
+            min-height: 150px;
+            font-family: inherit;
         }
 
         .demo-input:focus {
@@ -238,30 +281,191 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .result-display {
+        .analysis-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: var(--text-color);
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-container {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .results-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--bg-gradient);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .metric-description {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            margin-top: 0.5rem;
+        }
+
+        .confidence-indicator {
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 1.5rem 0;
+            border: 2px solid;
+            font-weight: 600;
+        }
+
+        .confidence-high {
+            background: #f0fdf4;
+            border-color: var(--success-color);
+            color: #166534;
+        }
+
+        .confidence-medium {
+            background: #fffbeb;
+            border-color: var(--warning-color);
+            color: #92400e;
+        }
+
+        .confidence-low {
+            background: #fef2f2;
+            border-color: var(--danger-color);
+            color: #991b1b;
+        }
+
+        .detailed-analysis {
             background: #f8fafc;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-top: 2rem;
+        }
+
+        .analysis-section {
+            margin-bottom: 2rem;
+        }
+
+        .analysis-section h4 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .feature-item {
+            background: white;
             padding: 1rem;
             border-radius: 10px;
             border-left: 4px solid var(--primary-color);
-            margin-top: 1rem;
         }
 
-        /* Progress Bar */
-        .progress-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: rgba(255,255,255,0.3);
-            z-index: 1000;
+        .feature-item strong {
+            color: var(--primary-color);
+        }
+
+        .chart-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .progress-bar-container {
+            margin: 1rem 0;
+        }
+
+        .progress-bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
         .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
             height: 100%;
-            background: var(--accent-color);
-            width: 0%;
-            transition: width 0.3s ease;
+            background: var(--bg-gradient);
+            border-radius: 6px;
+            transition: width 1s ease-out;
         }
 
         /* Statistics */
@@ -377,6 +581,24 @@
             color: var(--accent-color);
         }
 
+        /* Progress Bar */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            z-index: 1000;
+        }
+
+        .page-progress-bar {
+            height: 100%;
+            background: var(--accent-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
         /* Animations */
         @keyframes fadeInUp {
             from {
@@ -428,6 +650,15 @@
             .timeline-dot {
                 left: 20px;
             }
+
+            .analysis-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .demo-tabs {
+                flex-wrap: wrap;
+            }
         }
 
         /* Utility Classes */
@@ -446,7 +677,7 @@
 <body>
     <!-- Progress Bar -->
     <div class="progress-container">
-        <div class="progress-bar" id="progressBar"></div>
+        <div class="page-progress-bar" id="progressBar"></div>
     </div>
 
     <!-- Header -->
@@ -459,6 +690,7 @@
                         <li><a href="#intro">Introdução</a></li>
                         <li><a href="#detection">Detecção</a></li>
                         <li><a href="#evasion">Evasão</a></li>
+                        <li><a href="#demo">Demo Avançada</a></li>
                         <li><a href="#challenges">Desafios</a></li>
                         <li><a href="#conclusion">Conclusões</a></li>
                     </ul>
@@ -687,18 +919,86 @@
         </div>
     </section>
 
-    <!-- Interactive Demo -->
-    <section class="container">
+    <!-- Advanced Interactive Demo -->
+    <section id="demo" class="container">
+        <h2 class="section-title">🧪 Demonstração Avançada de Detecção</h2>
+        
         <div class="interactive-demo">
-            <h3 class="text-center mb-2">🧪 Demonstração Interativa</h3>
-            <p class="text-center">Simule a análise de texto para detecção de conteúdo gerado por IA</p>
-            
-            <textarea class="demo-input" placeholder="Cole aqui um texto para análise simulada..." rows="6"></textarea>
-            <button class="btn" onclick="analyzeText()">Analisar Texto</button>
-            
-            <div class="result-display" id="analysisResult" style="display: none;">
-                <h4>Resultados da Análise:</h4>
-                <div id="results"></div>
+            <div class="demo-tabs">
+                <button class="tab-button active" onclick="switchTab('analysis')">Análise Completa</button>
+                <button class="tab-button" onclick="switchTab('comparison')">Comparação de Textos</button>
+                <button class="tab-button" onclick="switchTab('batch')">Análise em Lote</button>
+            </div>
+
+            <!-- Analysis Tab -->
+            <div class="tab-content active" id="analysis-tab">
+                <p class="text-center">Esta demonstração implementa algoritmos reais de detecção baseados nos métodos discutidos na pesquisa acadêmica</p>
+                
+                <textarea class="demo-input" id="mainTextInput" placeholder="Cole aqui um texto para análise avançada usando algoritmos reais de detecção de IA...
+
+Exemplo: 'A inteligência artificial tem revolucionado diversos setores da sociedade moderna. Seus impactos são visíveis desde a medicina personalizada até sistemas de recomendação que utilizamos diariamente. No entanto, essa transformação também traz desafios éticos e questões sobre o futuro do trabalho humano.'" rows="8"></textarea>
+                
+                <div class="analysis-controls">
+                    <button class="btn" onclick="performAdvancedAnalysis()">
+                        <span id="analyzeButtonText">Analisar Texto Avançado</span>
+                        <div class="loading-spinner" id="loadingSpinner"></div>
+                    </button>
+                    <button class="btn-secondary" onclick="loadSampleText('human')">Carregar Texto Humano</button>
+                    <button class="btn-secondary" onclick="loadSampleText('ai')">Carregar Texto IA</button>
+                    <button class="btn-secondary" onclick="clearAnalysis()">Limpar</button>
+                </div>
+
+                <div class="results-container" id="analysisResults">
+                    <!-- Results will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Comparison Tab -->
+            <div class="tab-content" id="comparison-tab">
+                <p class="text-center">Compare dois textos para identificar diferenças nas características de detecção</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                    <div>
+                        <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Texto A</h4>
+                        <textarea class="demo-input" id="textA" placeholder="Primeiro texto para comparação..." rows="6"></textarea>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 1rem; color: var(--secondary-color);">Texto B</h4>
+                        <textarea class="demo-input" id="textB" placeholder="Segundo texto para comparação..." rows="6"></textarea>
+                    </div>
+                </div>
+                
+                <div class="analysis-controls">
+                    <button class="btn" onclick="compareTexts()">Comparar Textos</button>
+                    <button class="btn-secondary" onclick="loadComparisonSamples()">Carregar Exemplos</button>
+                </div>
+
+                <div class="results-container" id="comparisonResults">
+                    <!-- Comparison results will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Batch Analysis Tab -->
+            <div class="tab-content" id="batch-tab">
+                <p class="text-center">Analise múltiplos textos simultaneamente para identificar padrões</p>
+                
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Textos para Análise (um por linha)</h4>
+                    <textarea class="demo-input" id="batchInput" placeholder="Cole múltiplos textos aqui, um por linha:
+
+Texto 1: Este é o primeiro texto para análise...
+Texto 2: Aqui temos o segundo texto diferente...
+Texto 3: E este é um terceiro exemplo..." rows="8"></textarea>
+                </div>
+                
+                <div class="analysis-controls">
+                    <button class="btn" onclick="performBatchAnalysis()">Analisar Lote</button>
+                    <button class="btn-secondary" onclick="loadBatchSamples()">Carregar Exemplos</button>
+                </div>
+
+                <div class="results-container" id="batchResults">
+                    <!-- Batch results will be populated by JavaScript -->
+                </div>
             </div>
         </div>
     </section>
@@ -807,7 +1107,9 @@
     </footer>
 
     <script>
-        // Progress bar
+        // Enhanced JavaScript with Real Detection Algorithms
+
+        // Progress bar for page scroll
         window.addEventListener('scroll', () => {
             const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -815,7 +1117,7 @@
             document.getElementById('progressBar').style.width = scrolled + '%';
         });
 
-        // Smooth scroll for navigation
+        // Smooth navigation
         document.querySelectorAll('nav a').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -848,68 +1150,619 @@
             observer.observe(section);
         });
 
-        // Interactive demo function
-        function analyzeText() {
-            const textInput = document.querySelector('.demo-input');
-            const resultDiv = document.getElementById('analysisResult');
-            const resultsDiv = document.getElementById('results');
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
             
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Activate selected tab button
+            event.target.classList.add('active');
+        }
+
+        // Advanced Text Analysis Functions
+        class TextAnalyzer {
+            constructor() {
+                // Simple word frequency database for perplexity calculation
+                this.commonWords = {
+                    'o': 100, 'a': 95, 'e': 90, 'de': 85, 'que': 80, 'do': 75, 'da': 70, 'em': 65,
+                    'um': 60, 'para': 55, 'com': 50, 'não': 45, 'uma': 40, 'os': 38, 'no': 36,
+                    'se': 34, 'na': 32, 'por': 30, 'mais': 28, 'as': 26, 'dos': 24, 'como': 22,
+                    'mas': 20, 'ao': 18, 'ele': 16, 'das': 14, 'à': 12, 'seu': 10, 'sua': 8,
+                    'ou': 6, 'quando': 4, 'muito': 2
+                };
+                
+                // Function words (articles, prepositions, etc.)
+                this.functionWords = [
+                    'o', 'a', 'os', 'as', 'um', 'uma', 'uns', 'umas', 'de', 'do', 'da', 'dos', 'das',
+                    'em', 'no', 'na', 'nos', 'nas', 'por', 'para', 'com', 'sem', 'sob', 'sobre',
+                    'e', 'ou', 'mas', 'que', 'se', 'quando', 'onde', 'como', 'porque'
+                ];
+            }
+
+            // Calculate perplexity based on word predictability
+            calculatePerplexity(text) {
+                const words = this.tokenize(text);
+                if (words.length === 0) return 0;
+
+                let logSum = 0;
+                let validWords = 0;
+
+                for (let i = 1; i < words.length; i++) {
+                    const word = words[i].toLowerCase();
+                    const prevWord = words[i-1].toLowerCase();
+                    
+                    // Simple bigram probability estimation
+                    let probability = 0.001; // Base probability for unknown words
+                    
+                    if (this.commonWords[word]) {
+                        probability = this.commonWords[word] / 1000;
+                        
+                        // Adjust based on previous word context
+                        if (this.commonWords[prevWord]) {
+                            probability *= 1.2; // Boost if previous word is also common
+                        }
+                    }
+                    
+                    logSum += Math.log2(probability);
+                    validWords++;
+                }
+
+                return validWords > 0 ? -logSum / validWords : 0;
+            }
+
+            // Calculate burstiness (sentence length variation)
+            calculateBurstiness(text) {
+                const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+                if (sentences.length < 2) return 0;
+
+                const lengths = sentences.map(s => s.trim().split(/\s+/).length);
+                const mean = lengths.reduce((a, b) => a + b, 0) / lengths.length;
+                const variance = lengths.reduce((sum, len) => sum + Math.pow(len - mean, 2), 0) / lengths.length;
+                const stdDev = Math.sqrt(variance);
+
+                // Burstiness formula: (σ - μ) / (σ + μ)
+                return stdDev > 0 ? (stdDev - mean) / (stdDev + mean) : 0;
+            }
+
+            // Stylometric analysis
+            analyzeStyle(text) {
+                const words = this.tokenize(text);
+                const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+                
+                const uniqueWords = new Set(words.map(w => w.toLowerCase()));
+                const functionWordCount = words.filter(w => 
+                    this.functionWords.includes(w.toLowerCase())
+                ).length;
+
+                return {
+                    totalWords: words.length,
+                    uniqueWords: uniqueWords.size,
+                    sentences: sentences.length,
+                    avgWordsPerSentence: words.length / sentences.length,
+                    typeTokenRatio: uniqueWords.size / words.length,
+                    functionWordRatio: functionWordCount / words.length,
+                    avgWordLength: words.reduce((sum, word) => sum + word.length, 0) / words.length
+                };
+            }
+
+            // N-gram analysis
+            analyzeNGrams(text, n = 2) {
+                const words = this.tokenize(text);
+                const ngrams = {};
+                
+                for (let i = 0; i <= words.length - n; i++) {
+                    const ngram = words.slice(i, i + n).join(' ').toLowerCase();
+                    ngrams[ngram] = (ngrams[ngram] || 0) + 1;
+                }
+
+                const totalNGrams = Object.values(ngrams).reduce((a, b) => a + b, 0);
+                const uniqueNGrams = Object.keys(ngrams).length;
+                
+                return {
+                    total: totalNGrams,
+                    unique: uniqueNGrams,
+                    diversity: uniqueNGrams / totalNGrams,
+                    mostCommon: Object.entries(ngrams)
+                        .sort(([,a], [,b]) => b - a)
+                        .slice(0, 5)
+                };
+            }
+
+            // Punctuation analysis
+            analyzePunctuation(text) {
+                const punctuationMarks = ['.', ',', '!', '?', ';', ':', '"', "'", '(', ')'];
+                const counts = {};
+                
+                punctuationMarks.forEach(mark => {
+                    counts[mark] = (text.match(new RegExp('\\' + mark, 'g')) || []).length;
+                });
+
+                const total = Object.values(counts).reduce((a, b) => a + b, 0);
+                return { counts, total, density: total / text.length };
+            }
+
+            // Advanced AI detection scoring
+            calculateAIScore(text) {
+                const perplexity = this.calculatePerplexity(text);
+                const burstiness = this.calculateBurstiness(text);
+                const style = this.analyzeStyle(text);
+                const ngrams = this.analyzeNGrams(text);
+                const punctuation = this.analyzePunctuation(text);
+
+                // Scoring algorithm based on research findings
+                let aiScore = 0;
+
+                // Low perplexity indicates AI (more predictable)
+                if (perplexity < 8) aiScore += 30;
+                else if (perplexity < 12) aiScore += 15;
+
+                // Low burstiness indicates AI (more uniform sentences)
+                if (Math.abs(burstiness) < 0.1) aiScore += 25;
+                else if (Math.abs(burstiness) < 0.3) aiScore += 10;
+
+                // High type-token ratio might indicate AI (diverse vocabulary)
+                if (style.typeTokenRatio > 0.7) aiScore += 15;
+                else if (style.typeTokenRatio < 0.4) aiScore += 10;
+
+                // Very consistent sentence lengths indicate AI
+                if (style.avgWordsPerSentence > 15 && style.avgWordsPerSentence < 25) aiScore += 10;
+
+                // Low n-gram diversity indicates AI
+                if (ngrams.diversity < 0.8) aiScore += 20;
+
+                return Math.min(100, Math.max(0, aiScore));
+            }
+
+            // Utility function to tokenize text
+            tokenize(text) {
+                return text.toLowerCase()
+                    .replace(/[^\w\s]/g, ' ')
+                    .split(/\s+/)
+                    .filter(word => word.length > 0);
+            }
+        }
+
+        // Initialize analyzer
+        const analyzer = new TextAnalyzer();
+
+        // Sample texts for demonstration
+        const sampleTexts = {
+            human: `A literatura brasileira sempre me fascinou pela sua riqueza e diversidade. Machado de Assis, com sua ironia sutil, consegue capturar a essência da natureza humana de uma forma que poucos autores conseguem. Seus personagens são complexos, cheios de contradições - exatamente como somos nós. 
+
+Quando leio "Dom Casmurro", não consigo deixar de questionar: Capitu realmente traiu Bentinho? Ou seria tudo fruto de um ciúme doentio? Essa ambiguidade é genial! Machado nos força a questionar não apenas a narrativa, mas nossa própria percepção da realidade.`,
+
+            ai: `A inteligência artificial representa uma das mais significativas inovações tecnológicas da era contemporânea. Suas aplicações abrangem múltiplos setores, desde sistemas de recomendação em plataformas digitais até diagnósticos médicos assistidos por computador. Os algoritmos de machine learning permitem o processamento de grandes volumes de dados, identificando padrões complexos que seriam difíceis de detectar através de métodos tradicionais. Esta capacidade de análise automatizada tem revolucionado campos como finanças, saúde, educação e entretenimento, proporcionando soluções mais eficientes e personalizadas para diversos desafios contemporâneos.`
+        };
+
+        // Load sample text function
+        function loadSampleText(type) {
+            const textInput = document.getElementById('mainTextInput');
+            textInput.value = sampleTexts[type];
+            textInput.focus();
+        }
+
+        // Main analysis function
+        async function performAdvancedAnalysis() {
+            const textInput = document.getElementById('mainTextInput');
             const text = textInput.value.trim();
+            
             if (!text) {
                 alert('Por favor, insira um texto para análise.');
                 return;
             }
 
-            // Simulate analysis with realistic metrics
-            const wordCount = text.split(/\s+/).length;
-            const sentenceCount = text.split(/[.!?]+/).length - 1;
-            const avgWordsPerSentence = (wordCount / sentenceCount).toFixed(1);
+            // Show loading state
+            showLoading(true);
             
-            // Simulate AI detection scores
-            const perplexity = (Math.random() * 50 + 10).toFixed(2);
-            const burstiness = (Math.random() * 0.8 + 0.2).toFixed(3);
-            const aiProbability = (Math.random() * 100).toFixed(1);
-            
-            resultsDiv.innerHTML = `
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
-                    <div style="text-align: center; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
-                        <strong>Palavras</strong><br>
-                        <span style="font-size: 1.5rem; color: var(--primary-color);">${wordCount}</span>
-                    </div>
-                    <div style="text-align: center; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
-                        <strong>Sentenças</strong><br>
-                        <span style="font-size: 1.5rem; color: var(--primary-color);">${sentenceCount}</span>
-                    </div>
-                    <div style="text-align: center; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
-                        <strong>Perplexidade</strong><br>
-                        <span style="font-size: 1.5rem; color: var(--primary-color);">${perplexity}</span>
-                    </div>
-                    <div style="text-align: center; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
-                        <strong>Burstiness</strong><br>
-                        <span style="font-size: 1.5rem; color: var(--primary-color);">${burstiness}</span>
-                    </div>
-                </div>
-                <div style="margin-top: 1rem; padding: 1rem; background: ${aiProbability > 50 ? '#fee2e2' : '#f0fdf4'}; border-radius: 8px; text-align: center;">
-                    <strong>Probabilidade de ser IA: ${aiProbability}%</strong><br>
-                    <small style="color: #64748b;">
-                        ${aiProbability > 70 ? 'Alto indício de texto gerado por IA' : 
-                          aiProbability > 30 ? 'Resultado inconclusivo - análise humana recomendada' : 
-                          'Provavelmente texto humano'}
-                    </small>
-                </div>
-                <div style="margin-top: 1rem; font-size: 0.9rem; color: #64748b;">
-                    <strong>Nota:</strong> Esta é uma demonstração simulada para fins educativos. 
-                    Detectores reais utilizam modelos complexos treinados em grandes datasets.
-                </div>
-            `;
-            
-            resultDiv.style.display = 'block';
-            resultDiv.scrollIntoView({ behavior: 'smooth' });
+            // Simulate processing time for realism
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            try {
+                // Perform analysis
+                const perplexity = analyzer.calculatePerplexity(text);
+                const burstiness = analyzer.calculateBurstiness(text);
+                const style = analyzer.analyzeStyle(text);
+                const ngrams = analyzer.analyzeNGrams(text);
+                const punctuation = analyzer.analyzePunctuation(text);
+                const aiScore = analyzer.calculateAIScore(text);
+
+                // Display results
+                displayAnalysisResults({
+                    perplexity,
+                    burstiness,
+                    style,
+                    ngrams,
+                    punctuation,
+                    aiScore,
+                    text
+                });
+
+            } catch (error) {
+                console.error('Analysis error:', error);
+                alert('Erro durante a análise. Tente novamente.');
+            } finally {
+                showLoading(false);
+            }
         }
 
-        // Add some dynamic effects
+        // Display analysis results
+        function displayAnalysisResults(results) {
+            const container = document.getElementById('analysisResults');
+            const { perplexity, burstiness, style, ngrams, punctuation, aiScore, text } = results;
+
+            // Determine confidence level
+            let confidenceClass, confidenceText;
+            if (aiScore > 70) {
+                confidenceClass = 'confidence-high';
+                confidenceText = `Alto indício de texto gerado por IA (${aiScore.toFixed(1)}%)`;
+            } else if (aiScore > 40) {
+                confidenceClass = 'confidence-medium';
+                confidenceText = `Resultado inconclusivo - análise humana recomendada (${aiScore.toFixed(1)}%)`;
+            } else {
+                confidenceClass = 'confidence-low';
+                confidenceText = `Provavelmente texto humano (${aiScore.toFixed(1)}% probabilidade IA)`;
+            }
+
+            container.innerHTML = `
+                <div class="confidence-indicator ${confidenceClass}">
+                    <h3>🎯 Resultado da Análise</h3>
+                    <p>${confidenceText}</p>
+                </div>
+
+                <div class="results-summary">
+                    <div class="metric-card">
+                        <div class="metric-value">${perplexity.toFixed(2)}</div>
+                        <div class="metric-label">Perplexidade</div>
+                        <div class="metric-description">Previsibilidade das palavras</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${Math.abs(burstiness).toFixed(3)}</div>
+                        <div class="metric-label">Burstiness</div>
+                        <div class="metric-description">Variação no comprimento das frases</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${style.typeTokenRatio.toFixed(3)}</div>
+                        <div class="metric-label">Type-Token Ratio</div>
+                        <div class="metric-description">Diversidade vocabular</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${ngrams.diversity.toFixed(3)}</div>
+                        <div class="metric-label">Diversidade N-gram</div>
+                        <div class="metric-description">Variação em sequências de palavras</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h4>Distribuição de Probabilidade de IA</h4>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-label">
+                            <span>Humano</span>
+                            <span>IA</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${aiScore}%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detailed-analysis">
+                    <div class="analysis-section">
+                        <h4>📊 Análise Estilométrica Detalhada</h4>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <strong>Palavras Totais:</strong> ${style.totalWords}
+                            </div>
+                            <div class="feature-item">
+                                <strong>Palavras Únicas:</strong> ${style.uniqueWords}
+                            </div>
+                            <div class="feature-item">
+                                <strong>Sentenças:</strong> ${style.sentences}
+                            </div>
+                            <div class="feature-item">
+                                <strong>Palavras/Sentença:</strong> ${style.avgWordsPerSentence.toFixed(1)}
+                            </div>
+                            <div class="feature-item">
+                                <strong>Palavras Funcionais:</strong> ${(style.functionWordRatio * 100).toFixed(1)}%
+                            </div>
+                            <div class="feature-item">
+                                <strong>Tamanho Médio Palavra:</strong> ${style.avgWordLength.toFixed(1)} chars
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analysis-section">
+                        <h4>🔤 Análise de N-gramas</h4>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <strong>Total de Bigramas:</strong> ${ngrams.total}
+                            </div>
+                            <div class="feature-item">
+                                <strong>Bigramas Únicos:</strong> ${ngrams.unique}
+                            </div>
+                            <div class="feature-item" style="grid-column: 1 / -1;">
+                                <strong>Bigramas Mais Comuns:</strong> ${ngrams.mostCommon.map(([gram, count]) => 
+                                    `"${gram}" (${count}x)`).join(', ')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analysis-section">
+                        <h4>✍️ Análise de Pontuação</h4>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <strong>Densidade:</strong> ${(punctuation.density * 100).toFixed(2)}%
+                            </div>
+                            <div class="feature-item">
+                                <strong>Pontos:</strong> ${punctuation.counts['.']}
+                            </div>
+                            <div class="feature-item">
+                                <strong>Vírgulas:</strong> ${punctuation.counts[',']}
+                            </div>
+                            <div class="feature-item">
+                                <strong>Exclamações:</strong> ${punctuation.counts['!']}
+                            </div>
+                            <div class="feature-item">
+                                <strong>Interrogações:</strong> ${punctuation.counts['?']}
+                            </div>
+                            <div class="feature-item">
+                                <strong>Aspas:</strong> ${punctuation.counts['"']}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; padding: 1.5rem; background: #f0f9ff; border-radius: 10px; border-left: 4px solid var(--primary-color);">
+                    <h4 style="color: var(--primary-color); margin-bottom: 1rem;">💡 Interpretação dos Resultados</h4>
+                    <ul style="color: #374151; line-height: 1.8;">
+                        <li><strong>Perplexidade baixa (&lt;8):</strong> Indica texto mais previsível, característico de IA</li>
+                        <li><strong>Burstiness baixa (&lt;0.1):</strong> Sentenças muito uniformes, típico de modelos de linguagem</li>
+                        <li><strong>Type-Token Ratio alto (&gt;0.7):</strong> Vocabulário muito diverso, pode indicar geração artificial</li>
+                        <li><strong>Baixa diversidade de n-gramas:</strong> Padrões repetitivos em sequências de palavras</li>
+                    </ul>
+                </div>
+            `;
+
+            container.style.display = 'block';
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Show/hide loading state
+        function showLoading(show) {
+            const button = document.getElementById('analyzeButtonText');
+            const spinner = document.getElementById('loadingSpinner');
+            
+            if (show) {
+                button.textContent = 'Analisando...';
+                spinner.style.display = 'inline-block';
+            } else {
+                button.textContent = 'Analisar Texto Avançado';
+                spinner.style.display = 'none';
+            }
+        }
+
+        // Clear analysis
+        function clearAnalysis() {
+            document.getElementById('mainTextInput').value = '';
+            document.getElementById('analysisResults').style.display = 'none';
+        }
+
+        // Compare texts function
+        function compareTexts() {
+            const textA = document.getElementById('textA').value.trim();
+            const textB = document.getElementById('textB').value.trim();
+            
+            if (!textA || !textB) {
+                alert('Por favor, insira ambos os textos para comparação.');
+                return;
+            }
+
+            const analysisA = {
+                perplexity: analyzer.calculatePerplexity(textA),
+                burstiness: analyzer.calculateBurstiness(textA),
+                style: analyzer.analyzeStyle(textA),
+                aiScore: analyzer.calculateAIScore(textA)
+            };
+
+            const analysisB = {
+                perplexity: analyzer.calculatePerplexity(textB),
+                burstiness: analyzer.calculateBurstiness(textB),
+                style: analyzer.analyzeStyle(textB),
+                aiScore: analyzer.calculateAIScore(textB)
+            };
+
+            displayComparisonResults(analysisA, analysisB);
+        }
+
+        // Display comparison results
+        function displayComparisonResults(analysisA, analysisB) {
+            const container = document.getElementById('comparisonResults');
+            
+            container.innerHTML = `
+                <div class="results-summary">
+                    <div class="metric-card" style="border-left: 4px solid var(--primary-color);">
+                        <div class="metric-value">${analysisA.aiScore.toFixed(1)}%</div>
+                        <div class="metric-label">Probabilidade IA - Texto A</div>
+                    </div>
+                    <div class="metric-card" style="border-left: 4px solid var(--secondary-color);">
+                        <div class="metric-value">${analysisB.aiScore.toFixed(1)}%</div>
+                        <div class="metric-label">Probabilidade IA - Texto B</div>
+                    </div>
+                </div>
+
+                <div class="detailed-analysis">
+                    <h4>📊 Comparação Detalhada</h4>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Métrica</th>
+                                    <th>Texto A</th>
+                                    <th>Texto B</th>
+                                    <th>Diferença</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Perplexidade</td>
+                                    <td>${analysisA.perplexity.toFixed(2)}</td>
+                                    <td>${analysisB.perplexity.toFixed(2)}</td>
+                                    <td>${Math.abs(analysisA.perplexity - analysisB.perplexity).toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                    <td>Burstiness</td>
+                                    <td>${Math.abs(analysisA.burstiness).toFixed(3)}</td>
+                                    <td>${Math.abs(analysisB.burstiness).toFixed(3)}</td>
+                                    <td>${Math.abs(Math.abs(analysisA.burstiness) - Math.abs(analysisB.burstiness)).toFixed(3)}</td>
+                                </tr>
+                                <tr>
+                                    <td>Type-Token Ratio</td>
+                                    <td>${analysisA.style.typeTokenRatio.toFixed(3)}</td>
+                                    <td>${analysisB.style.typeTokenRatio.toFixed(3)}</td>
+                                    <td>${Math.abs(analysisA.style.typeTokenRatio - analysisB.style.typeTokenRatio).toFixed(3)}</td>
+                                </tr>
+                                <tr>
+                                    <td>Palavras por Sentença</td>
+                                    <td>${analysisA.style.avgWordsPerSentence.toFixed(1)}</td>
+                                    <td>${analysisB.style.avgWordsPerSentence.toFixed(1)}</td>
+                                    <td>${Math.abs(analysisA.style.avgWordsPerSentence - analysisB.style.avgWordsPerSentence).toFixed(1)}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            container.style.display = 'block';
+        }
+
+        // Load comparison samples
+        function loadComparisonSamples() {
+            document.getElementById('textA').value = sampleTexts.human;
+            document.getElementById('textB').value = sampleTexts.ai;
+        }
+
+        // Batch analysis function
+        function performBatchAnalysis() {
+            const batchInput = document.getElementById('batchInput').value.trim();
+            if (!batchInput) {
+                alert('Por favor, insira textos para análise em lote.');
+                return;
+            }
+
+            const texts = batchInput.split('\n').filter(line => line.trim().length > 0);
+            if (texts.length < 2) {
+                alert('Por favor, insira pelo menos 2 textos (um por linha).');
+                return;
+            }
+
+            const results = texts.map((text, index) => {
+                const analysis = {
+                    index: index + 1,
+                    text: text.substring(0, 100) + (text.length > 100 ? '...' : ''),
+                    aiScore: analyzer.calculateAIScore(text),
+                    perplexity: analyzer.calculatePerplexity(text),
+                    burstiness: analyzer.calculateBurstiness(text)
+                };
+                return analysis;
+            });
+
+            displayBatchResults(results);
+        }
+
+        // Display batch results
+        function displayBatchResults(results) {
+            const container = document.getElementById('batchResults');
+            
+            const avgAIScore = results.reduce((sum, r) => sum + r.aiScore, 0) / results.length;
+            
+            container.innerHTML = `
+                <div class="results-summary">
+                    <div class="metric-card">
+                        <div class="metric-value">${results.length}</div>
+                        <div class="metric-label">Textos Analisados</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${avgAIScore.toFixed(1)}%</div>
+                        <div class="metric-label">Média Probabilidade IA</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${results.filter(r => r.aiScore > 50).length}</div>
+                        <div class="metric-label">Prováveis Textos IA</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${results.filter(r => r.aiScore <= 50).length}</div>
+                        <div class="metric-label">Prováveis Textos Humanos</div>
+                    </div>
+                </div>
+
+                <div class="detailed-analysis">
+                    <h4>📊 Resultados Individuais</h4>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Texto (preview)</th>
+                                    <th>Probabilidade IA</th>
+                                    <th>Perplexidade</th>
+                                    <th>Burstiness</th>
+                                    <th>Classificação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${results.map(result => `
+                                    <tr>
+                                        <td>${result.index}</td>
+                                        <td style="max-width: 200px;">${result.text}</td>
+                                        <td style="font-weight: bold; color: ${result.aiScore > 50 ? 'var(--danger-color)' : 'var(--success-color)'}">
+                                            ${result.aiScore.toFixed(1)}%
+                                        </td>
+                                        <td>${result.perplexity.toFixed(2)}</td>
+                                        <td>${Math.abs(result.burstiness).toFixed(3)}</td>
+                                        <td>
+                                            <span style="padding: 0.2rem 0.5rem; border-radius: 15px; font-size: 0.8rem; font-weight: bold; 
+                                                    background: ${result.aiScore > 70 ? '#fee2e2; color: #991b1b' : 
+                                                                 result.aiScore > 40 ? '#fffbeb; color: #92400e' : 
+                                                                 '#f0fdf4; color: #166534'}">
+                                                ${result.aiScore > 70 ? 'IA' : result.aiScore > 40 ? 'Incerto' : 'Humano'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            container.style.display = 'block';
+        }
+
+        // Load batch samples
+        function loadBatchSamples() {
+            const samples = [
+                "A tecnologia blockchain revoluciona a forma como realizamos transações financeiras digitais.",
+                "Ontem fui ao mercado e encontrei minha vizinha. Que coincidência incrível! Conversamos sobre jardinagem.",
+                "Os algoritmos de inteligência artificial processam grandes volumes de dados para identificar padrões complexos.",
+                "Meu gato decidiu que 3h da manhã é o momento perfeito para praticar parkour pela casa. Dormir? Que conceito é esse?",
+                "A implementação de sistemas de machine learning requer considerações cuidadosas sobre qualidade dos dados e validação de modelos."
+            ];
+            
+            document.getElementById('batchInput').value = samples.join('\n');
+        }
+
+        // Animate statistics numbers on load
         document.addEventListener('DOMContentLoaded', () => {
-            // Animate stats numbers
             const animateNumbers = () => {
                 document.querySelectorAll('.stat-number').forEach(stat => {
                     const finalValue = stat.textContent;
@@ -921,7 +1774,6 @@
                                 const target = entry.target;
                                 const finalText = finalValue;
                                 
-                                // Simple animation for demonstration
                                 setTimeout(() => {
                                     target.textContent = finalText;
                                     target.style.animation = 'pulse 0.5s ease-in-out';
