@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detecção e Evasão de Texto Gerado por IA</title>
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --dark-color: #1a1a2e;
+            --light-color: #eee;
+            --text-color: #333;
+            --bg-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: #f8fafc;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg-gradient);
+            color: white;
+            padding: 2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--card-shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        nav a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: var(--bg-gradient);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .btn {
+            background: var(--accent-color);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: var(--transition);
+            cursor: pointer;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(240, 147, 251, 0.3);
+        }
+
+        /* Sections */
+        section {
+            padding: 4rem 0;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: var(--transition);
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: var(--bg-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+
+        .card p {
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 2rem 0;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: var(--bg-gradient);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Interactive Elements */
+        .interactive-demo {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            margin: 2rem 0;
+        }
+
+        .demo-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+
+        .demo-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .result-display {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+            margin-top: 1rem;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--accent-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: scale(1.05);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            background: var(--bg-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            margin: 3rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: var(--bg-gradient);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            display: flex;
+            justify-content: flex-end;
+            padding: 2rem 0;
+            position: relative;
+            width: 50%;
+        }
+
+        .timeline-item:nth-child(even) {
+            align-self: flex-end;
+            justify-content: flex-start;
+            margin-left: 50%;
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            width: 90%;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .timeline-content:hover {
+            transform: scale(1.02);
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: var(--card-shadow);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .header-content {
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .timeline::before {
+                left: 20px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                margin-left: 40px;
+                justify-content: flex-start;
+            }
+            
+            .timeline-item:nth-child(even) {
+                margin-left: 40px;
+            }
+            
+            .timeline-dot {
+                left: 20px;
+            }
+        }
+
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .mt-2 { margin-top: 2rem; }
+        .mb-2 { margin-bottom: 2rem; }
+        .highlight {
+            background: linear-gradient(120deg, var(--accent-color) 0%, var(--accent-color) 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 0.2em;
+            background-position: 0 88%;
+            padding: 0 0.2em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">🤖 AI Detection Research</a>
+                <nav>
+                    <ul>
+                        <li><a href="#intro">Introdução</a></li>
+                        <li><a href="#detection">Detecção</a></li>
+                        <li><a href="#evasion">Evasão</a></li>
+                        <li><a href="#challenges">Desafios</a></li>
+                        <li><a href="#conclusion">Conclusões</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Detecção e Evasão de Texto Gerado por IA</h1>
+            <p>Uma análise abrangente dos métodos, desafios e o futuro da autenticidade textual na era dos grandes modelos de linguagem</p>
+            <a href="#intro" class="btn">Explorar Pesquisa</a>
+        </div>
+    </section>
+
+    <!-- Statistics -->
+    <section class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">80-95%</div>
+                <div class="stat-label">Precisão da Estilometria</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">78-96%</div>
+                <div class="stat-label">Taxa de Evasão (AuthorMist)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">57%</div>
+                <div class="stat-label">Melhoria CoPA vs FastDetectGPT</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">0.94+</div>
+                <div class="stat-label">Similaridade Semântica</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Introduction -->
+    <section id="intro" class="container">
+        <h2 class="section-title">Introdução</h2>
+        <div class="cards-grid">
+            <div class="card">
+                <h3>🚀 A Ascensão dos LLMs</h3>
+                <p>A emergência dos Modelos de Linguagem Grandes representa um marco na inteligência artificial, demonstrando capacidades notáveis na geração de texto que se assemelha à escrita humana em uma vasta gama de estilos e gêneros.</p>
+            </div>
+            <div class="card">
+                <h3>⚠️ Necessidade Crítica de Detecção</h3>
+                <p>A facilidade com que os LLMs podem ser empregados para criar notícias falsas, spam e serem utilizados indevidamente na elaboração de trabalhos acadêmicos levanta sérias preocupações sobre autenticidade.</p>
+            </div>
+            <div class="card">
+                <h3>🎯 O Jogo de Gato e Rato</h3>
+                <p>O campo é caracterizado por uma dinâmica evolutiva constante entre sistemas de detecção cada vez mais sofisticados e técnicas de evasão que aprendem a contornar esses mecanismos.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detection Methods -->
+    <section id="detection" class="container">
+        <h2 class="section-title">Métodos de Detecção</h2>
+        
+        <div class="cards-grid">
+            <div class="card">
+                <h3>📊 Análise Estatística</h3>
+                <p><strong>Perplexidade:</strong> Métrica que avalia quão previsível é uma sequência de palavras. Textos de IA tendem a apresentar menor perplexidade.</p>
+                <p><strong>Burstiness:</strong> Variação no comprimento e estrutura das frases. Escrita humana exibe maior burstiness naturalmente.</p>
+            </div>
+            
+            <div class="card">
+                <h3>🔍 Estilometria</h3>
+                <p>Estuda o estilo linguístico através de análises estatísticas, funcionando como uma "impressão digital" textual. Analisa frequência de palavras, comprimento de sentenças, uso de pontuação e n-gramas.</p>
+            </div>
+            
+            <div class="card">
+                <h3>🤖 Classificadores ML</h3>
+                <p>Modelos como RoBERTa com LoRA, XGBoost e detectores zero-shot (DetectGPT, GPTZero) que aprendem padrões para distinguir texto humano de sintético.</p>
+            </div>
+            
+            <div class="card">
+                <h3>🏷️ Watermarking</h3>
+                <p>Estratégia proativa que embute sinais detectáveis no conteúdo durante a geração, usando técnicas como listas verde/vermelha de tokens.</p>
+            </div>
+        </div>
+
+        <!-- Detection Methods Comparison Table -->
+        <div class="table-container">
+            <h3 class="text-center mb-2">Comparação de Métodos de Detecção</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Método</th>
+                        <th>Princípio</th>
+                        <th>Prós</th>
+                        <th>Contras</th>
+                        <th>Eficácia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Perplexidade/Burstiness</td>
+                        <td>Analisa previsibilidade e variação estrutural</td>
+                        <td>Simples de calcular, intuitivo</td>
+                        <td>Menos eficaz contra LLMs avançados</td>
+                        <td>Decrescente</td>
+                    </tr>
+                    <tr>
+                        <td>Estilometria</td>
+                        <td>Análise estatística de características linguísticas</td>
+                        <td>Alta precisão com dados suficientes</td>
+                        <td>Requer amostras longas, sensível a mudanças</td>
+                        <td>80-95%</td>
+                    </tr>
+                    <tr>
+                        <td>RoBERTa + LoRA</td>
+                        <td>Fine-tuning de transformers pré-treinados</td>
+                        <td>Alto desempenho, LoRA eficiente</td>
+                        <td>Generalização limitada para novos LLMs</td>
+                        <td>Alto</td>
+                    </tr>
+                    <tr>
+                        <td>Detectores Zero-Shot</td>
+                        <td>Análise de propriedades intrínsecas</td>
+                        <td>Sem retreinamento necessário</td>
+                        <td>Menos confiável sem acesso aos internos</td>
+                        <td>Variável</td>
+                    </tr>
+                    <tr>
+                        <td>Watermarking</td>
+                        <td>Sinais embutidos durante geração</td>
+                        <td>Detecção proativa, forte estatisticamente</td>
+                        <td>Trade-offs com qualidade, vulnerável a ataques</td>
+                        <td>Alto se preservado</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Evasion Techniques -->
+    <section id="evasion" class="container">
+        <h2 class="section-title">Técnicas de Evasão</h2>
+        
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3>🔄 Parafraseamento Sofisticado</h3>
+                    <p><strong>DIPPER:</strong> Modelo que reescreve texto de IA modificando vocabulário e estrutura de frases para contornar detectores.</p>
+                    <p><strong>Eficácia:</strong> Queda significativa na precisão de detecção, mas limitada contra algoritmos avançados.</p>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3>🎯 Aprendizado por Reforço</h3>
+                    <p><strong>AuthorMist:</strong> Utiliza RL para treinar modelos a parafrasear texto maximizando evasão contra detectores.</p>
+                    <p><strong>Resultados:</strong> 78.6% a 96.2% de taxa de sucesso de ataque, preservando alta similaridade semântica (>0.94).</p>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3>⚡ Parafraseamento Contrastivo</h3>
+                    <p><strong>CoPA:</strong> Método sem treinamento específico que usa LLMs "off-the-shelf" com instruções elaboradas.</p>
+                    <p><strong>Inovação:</strong> "Subtrai" padrões maquínicos de distribuições humanas durante decodificação.</p>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3>💡 Engenharia de Prompts Avançada</h3>
+                    <p><strong>SICO:</strong> Otimização de exemplos in-contexto para guiar LLMs a produzir texto evasivo desde o início.</p>
+                    <p><strong>Eficiência:</strong> AUC de 0.54 em média, comparável ou superior ao texto humano em legibilidade.</p>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+        </div>
+
+        <!-- Evasion Techniques Comparison Table -->
+        <div class="table-container">
+            <h3 class="text-center mb-2">Comparação de Técnicas de Evasão</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Técnica</th>
+                        <th>Mecanismo</th>
+                        <th>Treinamento Necessário</th>
+                        <th>Eficácia</th>
+                        <th>Qualidade Preservada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>DIPPER</td>
+                        <td>Parafraseamento com LLM generativo</td>
+                        <td>Sim</td>
+                        <td>Significativa vs detectores básicos</td>
+                        <td>Preserva integridade semântica</td>
+                    </tr>
+                    <tr>
+                        <td>AuthorMist</td>
+                        <td>RL com feedback de detectores</td>
+                        <td>Sim (fine-tuning)</td>
+                        <td>78.6%-96.2% ASR</td>
+                        <td>Alta similaridade (>0.94)</td>
+                    </tr>
+                    <tr>
+                        <td>CoPA</td>
+                        <td>Parafraseamento contrastivo</td>
+                        <td>Não</td>
+                        <td>+57.72% vs FastDetectGPT</td>
+                        <td>Alta similaridade (>90%)</td>
+                    </tr>
+                    <tr>
+                        <td>SICO</td>
+                        <td>Otimização de prompts in-contexto</td>
+                        <td>Não</td>
+                        <td>AUC 0.54 média</td>
+                        <td>Comparável/melhor que humano</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Interactive Demo -->
+    <section class="container">
+        <div class="interactive-demo">
+            <h3 class="text-center mb-2">🧪 Demonstração Interativa</h3>
+            <p class="text-center">Simule a análise de texto para detecção de conteúdo gerado por IA</p>
+            
+            <textarea class="demo-input" placeholder="Cole aqui um texto para análise simulada..." rows="6"></textarea>
+            <button class="btn" onclick="analyzeText()">Analisar Texto</button>
+            
+            <div class="result-display" id="analysisResult" style="display: none;">
+                <h4>Resultados da Análise:</h4>
+                <div id="results"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Challenges -->
+    <section id="challenges" class="container">
+        <h2 class="section-title">Desafios e Limitações</h2>
+        
+        <div class="cards-grid">
+            <div class="card">
+                <h3>⚖️ Precisão e Vieses</h3>
+                <p>Falsos positivos/negativos são realidade. Detectores podem exibir vieses, sinalizando desproporcionalmente trabalhos de grupos específicos como falantes não nativos ou estilos neurodivergentes.</p>
+            </div>
+            
+            <div class="card">
+                <h3>📏 Fatores Contextuais</h3>
+                <p>Eficácia influenciada por comprimento do texto, estilo de escrita e evolução dos modelos. Textos curtos são mais desafiadores para classificação precisa.</p>
+            </div>
+            
+            <div class="card">
+                <h3>🛡️ Robustez vs Ataques</h3>
+                <p>Vulnerabilidade a parafraseamento, modificações textuais e ataques adversariais. Necessidade de treinamento adversarial e otimização robusta contínua.</p>
+            </div>
+            
+            <div class="card">
+                <h3>🏷️ Trade-offs do Watermarking</h3>
+                <p>Equilíbrio delicado entre robustez, imperceptibilidade e qualidade do texto. Marcas mais fortes são mais detectáveis mas também mais resilientes.</p>
+            </div>
+        </div>
+        
+        <div class="card mt-2">
+            <h3>🤔 Implicações Éticas</h3>
+            <p>Tensão entre necessidade de detecção e direito à privacidade. Questionamentos sobre uso legítimo de IA como assistente de escrita. Necessidade de políticas transparentes e processos de apelação.</p>
+            <p class="highlight">A "autenticidade" pode precisar ser redefinida na era da IA generativa, focando não apenas em "quem escreveu" mas "como foi criado".</p>
+        </div>
+    </section>
+
+    <!-- Conclusion -->
+    <section id="conclusion" class="container">
+        <h2 class="section-title">Conclusões e Recomendações</h2>
+        
+        <div class="cards-grid">
+            <div class="card">
+                <h3>🔬 Para Pesquisadores</h3>
+                <ul>
+                    <li>Priorizar robustez, explicabilidade e justiça dos sistemas</li>
+                    <li>Explorar abordagens híbridas combinando diferentes métodos</li>
+                    <li>Investigar limites fundamentais da detectabilidade</li>
+                    <li>Desenvolver watermarks dinâmicos e contextualmente conscientes</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3>⚙️ Para Desenvolvedores</h3>
+                <ul>
+                    <li>Adotar transparência no funcionamento das ferramentas</li>
+                    <li>Implementar watermarking responsavelmente</li>
+                    <li>Desenvolver ferramentas de proveniência de conteúdo</li>
+                    <li>Focar em sistemas de IA com rastreabilidade por design</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3>📋 Para Formuladores de Políticas</h3>
+                <ul>
+                    <li>Promover padrões técnicos para detecção e watermarking</li>
+                    <li>Considerar legislação sobre divulgação do uso de IA</li>
+                    <li>Fomentar literacia digital e pensamento crítico</li>
+                    <li>Incentivar debate ético contínuo</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card mt-2">
+            <h3>🔮 Perspectivas Futuras</h3>
+            <p>O futuro da autenticidade textual será moldado por:</p>
+            <ul>
+                <li><strong>IA na Detecção:</strong> Sistemas mais adaptativos através de coevolução adversarial</li>
+                <li><strong>Integração Multimodal:</strong> Verificação além da análise textual isolada</li>
+                <li><strong>Proveniência Digital:</strong> "Passaportes de conteúdo" criptográficos</li>
+                <li><strong>Evolução Ética:</strong> Redefinição de autoria e originalidade</li>
+            </ul>
+            <p class="highlight">A confiança na informação residirá na convergência de múltiplas linhas de evidência, não em uma única solução tecnológica.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Sobre a Pesquisa</h3>
+                    <p>Este trabalho apresenta uma análise abrangente do estado da arte em detecção e evasão de texto gerado por inteligência artificial.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Metodologia</h3>
+                    <p>Revisão sistemática da literatura acadêmica mais recente, análise de técnicas emergentes e avaliação de implicações éticas.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contato</h3>
+                    <p>Para mais informações sobre esta pesquisa, entre em contato através dos canais acadêmicos apropriados.</p>
+                </div>
+            </div>
+            <p>&copy; 2024 Pesquisa Acadêmica - Detecção e Evasão de Texto Gerado por IA</p>
+        </div>
+    </footer>
+
+    <script>
+        // Progress bar
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+        });
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Interactive demo function
+        function analyzeText() {
+            const textInput = document.querySelector('.demo-input');
+            const resultDiv = document.getElementById('analysisResult');
+            const resultsDiv = document.getElementById('results');
+            
+            const text = textInput.value.trim();
+            if (!text) {
+                alert('Por favor, insira um texto para análise.');
+                return;
+            }
+
+            // Simulate analysis with realistic metrics
+            const wordCount = text.split(/\s+/).length;
+            const sentenceCount = text.split(/[.!?]+/).length - 1;
+            const avgWordsPerSentence = (wordCount / sentenceCount).toFixed(1);
+            
+            // Simulate AI detection scores
+            const perplexity = (Math.random() * 50 + 10).toFixed(2);
+            const burstiness = (Math.random() * 0.8 + 0.2).toFixed(3);
+            const aiProbability = (Math.random() * 100).toFixed(1);
+            
+            resultsDiv.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                    <div style="text-align: center; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
+                        <strong>Palavras</strong><br>
+                        <span style="font-size: 1.5rem; color: var(--primary-color);">${wordCount}</span>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
+                        <strong>Sentenças</strong><br>
+                        <span style="font-size: 1.5rem; color: var(--primary-color);">${sentenceCount}</span>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
+                        <strong>Perplexidade</strong><br>
+                        <span style="font-size: 1.5rem; color: var(--primary-color);">${perplexity}</span>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
+                        <strong>Burstiness</strong><br>
+                        <span style="font-size: 1.5rem; color: var(--primary-color);">${burstiness}</span>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: ${aiProbability > 50 ? '#fee2e2' : '#f0fdf4'}; border-radius: 8px; text-align: center;">
+                    <strong>Probabilidade de ser IA: ${aiProbability}%</strong><br>
+                    <small style="color: #64748b;">
+                        ${aiProbability > 70 ? 'Alto indício de texto gerado por IA' : 
+                          aiProbability > 30 ? 'Resultado inconclusivo - análise humana recomendada' : 
+                          'Provavelmente texto humano'}
+                    </small>
+                </div>
+                <div style="margin-top: 1rem; font-size: 0.9rem; color: #64748b;">
+                    <strong>Nota:</strong> Esta é uma demonstração simulada para fins educativos. 
+                    Detectores reais utilizam modelos complexos treinados em grandes datasets.
+                </div>
+            `;
+            
+            resultDiv.style.display = 'block';
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Add some dynamic effects
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animate stats numbers
+            const animateNumbers = () => {
+                document.querySelectorAll('.stat-number').forEach(stat => {
+                    const finalValue = stat.textContent;
+                    stat.textContent = '0';
+                    
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                const target = entry.target;
+                                const finalText = finalValue;
+                                
+                                // Simple animation for demonstration
+                                setTimeout(() => {
+                                    target.textContent = finalText;
+                                    target.style.animation = 'pulse 0.5s ease-in-out';
+                                }, Math.random() * 500);
+                                
+                                observer.unobserve(target);
+                            }
+                        });
+                    });
+                    
+                    observer.observe(stat);
+                });
+            };
+            
+            animateNumbers();
+        });
+    </script>
+</body>
+</html>
