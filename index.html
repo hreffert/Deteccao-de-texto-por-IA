@@ -3,21 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detecção e Evasão de Texto Gerado por IA</title>
+    <title>AI Detection Lab - Detecção Avançada de Texto Gerado por IA</title>
+    
+    <!-- Chart.js para visualizações -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    
     <style>
         :root {
             --primary-color: #667eea;
             --secondary-color: #764ba2;
             --accent-color: #f093fb;
             --dark-color: #1a1a2e;
-            --light-color: #eee;
-            --text-color: #333;
-            --bg-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            --card-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --light-color: #ffffff;
+            --bg-light: #f8fafc;
+            --bg-dark: #0f0f23;
+            --text-light: #333333;
+            --text-dark: #e4e4e7;
+            --card-light: #ffffff;
+            --card-dark: #1e1e3f;
+            --border-light: #e2e8f0;
+            --border-dark: #2d2d4f;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-dark: rgba(0, 0, 0, 0.3);
             --success-color: #10b981;
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            --bg-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Dark mode variables */
+        [data-theme="dark"] {
+            --light-color: #0f0f23;
+            --bg-light: #0f0f23;
+            --text-light: #e4e4e7;
+            --card-light: #1e1e3f;
+            --border-light: #2d2d4f;
+            --shadow-light: rgba(0, 0, 0, 0.5);
+            --glass-bg: rgba(30, 30, 63, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         * {
@@ -27,28 +54,46 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
-            color: var(--text-color);
-            background: #f8fafc;
+            color: var(--text-light);
+            background: var(--bg-light);
             scroll-behavior: smooth;
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* Animated background particles */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.3;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
+            position: relative;
+            z-index: 1;
         }
 
-        /* Header */
+        /* Enhanced Header with Glassmorphism */
         header {
-            background: var(--bg-gradient);
-            color: white;
-            padding: 2rem 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
             position: sticky;
             top: 0;
-            z-index: 100;
-            box-shadow: var(--card-shadow);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: var(--transition);
         }
 
         .header-content {
@@ -56,216 +101,306 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .logo {
             font-size: 1.8rem;
             font-weight: bold;
+            background: var(--bg-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-decoration: none;
-            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: glow 3s ease-in-out infinite;
         }
 
+        @keyframes glow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        /* Navigation */
         nav ul {
             display: flex;
             list-style: none;
             gap: 2rem;
+            align-items: center;
         }
 
         nav a {
-            color: white;
+            color: var(--text-light);
             text-decoration: none;
             font-weight: 500;
-            transition: var(--transition);
             padding: 0.5rem 1rem;
             border-radius: 25px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-gradient);
+            transition: left 0.3s ease;
+            z-index: -1;
         }
 
         nav a:hover {
-            background: rgba(255,255,255,0.2);
+            color: white;
             transform: translateY(-2px);
         }
 
-        /* Hero Section */
+        nav a:hover::before {
+            left: 0;
+        }
+
+        /* Theme toggle button */
+        .theme-toggle {
+            background: var(--bg-gradient);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px var(--shadow-light);
+        }
+
+        /* Enhanced Hero Section */
         .hero {
             background: var(--bg-gradient);
             color: white;
-            padding: 4rem 0;
+            padding: 6rem 0;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .hero h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             margin-bottom: 1rem;
             animation: fadeInUp 1s ease-out;
+            position: relative;
+            z-index: 1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .hero p {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             max-width: 800px;
             margin: 0 auto 2rem;
             animation: fadeInUp 1s ease-out 0.2s both;
+            position: relative;
+            z-index: 1;
         }
 
+        /* Enhanced buttons */
         .btn {
             background: var(--accent-color);
             color: white;
-            padding: 1rem 2rem;
+            padding: 1rem 2.5rem;
             border: none;
             border-radius: 50px;
             font-size: 1.1rem;
             font-weight: 600;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             transition: var(--transition);
             cursor: pointer;
-            animation: fadeInUp 1s ease-out 0.4s both;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
         }
 
         .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(240, 147, 251, 0.3);
+            box-shadow: 0 10px 30px rgba(240, 147, 251, 0.4);
         }
 
-        /* Sections */
-        section {
-            padding: 4rem 0;
-            opacity: 0;
-            transform: translateY(50px);
-            transition: var(--transition);
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
-        section.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            text-align: center;
-            margin-bottom: 3rem;
-            background: var(--bg-gradient);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: bold;
-        }
-
-        /* Cards */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-
+        /* Enhanced Cards with Glassmorphism */
         .card {
-            background: white;
+            background: var(--card-light);
             padding: 2rem;
             border-radius: 20px;
-            box-shadow: var(--card-shadow);
+            box-shadow: 0 10px 30px var(--shadow-light);
             transition: var(--transition);
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--bg-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
         }
 
         .card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 20px 40px var(--shadow-light);
         }
 
-        .card h3 {
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-            font-size: 1.4rem;
+        .card:hover::before {
+            transform: scaleX(1);
         }
 
-        .card p {
-            color: #64748b;
-            margin-bottom: 1rem;
+        /* Stats Grid with 3D effect */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
         }
 
-        /* Tables */
-        .table-container {
-            overflow-x: auto;
-            margin: 2rem 0;
-            background: white;
-            border-radius: 15px;
-            box-shadow: var(--card-shadow);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-
-        th, td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        th {
-            background: var(--bg-gradient);
-            color: white;
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-        }
-
-        tr:hover {
-            background: #f8fafc;
-        }
-
-        /* Enhanced Interactive Demo */
-        .interactive-demo {
-            background: white;
-            padding: 2rem;
+        .stat-card {
+            background: var(--card-light);
+            text-align: center;
+            padding: 2.5rem;
             border-radius: 20px;
-            box-shadow: var(--card-shadow);
-            margin: 2rem 0;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            transition: var(--transition);
+            position: relative;
+            transform-style: preserve-3d;
+            cursor: pointer;
         }
 
+        .stat-card:hover {
+            transform: rotateY(10deg) rotateX(5deg) scale(1.05);
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: bold;
+            background: var(--bg-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Enhanced Interactive Demo Section */
+        .demo-section {
+            background: var(--card-light);
+            padding: 3rem;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px var(--shadow-light);
+            margin: 3rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-section::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--bg-gradient);
+            border-radius: 30px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .demo-section:hover::before {
+            opacity: 1;
+        }
+
+        /* Enhanced Tabs */
         .demo-tabs {
             display: flex;
             gap: 1rem;
             margin-bottom: 2rem;
-            border-bottom: 2px solid #e2e8f0;
+            flex-wrap: wrap;
+            padding: 0.5rem;
+            background: var(--bg-light);
+            border-radius: 15px;
         }
 
         .tab-button {
             padding: 1rem 2rem;
-            background: none;
+            background: transparent;
             border: none;
             font-size: 1rem;
             font-weight: 600;
-            color: #64748b;
+            color: var(--text-light);
             cursor: pointer;
-            border-bottom: 3px solid transparent;
+            border-radius: 10px;
             transition: var(--transition);
+            position: relative;
         }
 
         .tab-button.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
+            background: var(--bg-gradient);
+            color: white;
+            box-shadow: 0 5px 15px var(--shadow-light);
         }
 
-        .tab-button:hover {
-            color: var(--primary-color);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeInUp 0.3s ease-out;
-        }
-
+        /* Enhanced Input Areas */
         .demo-input {
             width: 100%;
             padding: 1.5rem;
-            border: 2px solid #e2e8f0;
+            border: 2px solid var(--border-light);
             border-radius: 15px;
             font-size: 1rem;
             margin-bottom: 1.5rem;
@@ -273,74 +408,55 @@
             resize: vertical;
             min-height: 150px;
             font-family: inherit;
+            background: var(--bg-light);
+            color: var(--text-light);
         }
 
         .demo-input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .analysis-controls {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .btn-secondary {
-            background: #f1f5f9;
-            color: var(--text-color);
-            padding: 0.75rem 1.5rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .btn-secondary:hover {
-            background: #e2e8f0;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
             transform: translateY(-2px);
         }
 
-        .loading-spinner {
-            display: none;
-            width: 24px;
-            height: 24px;
-            border: 3px solid #e2e8f0;
-            border-top: 3px solid var(--primary-color);
+        /* Real-time analysis indicator */
+        .realtime-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .realtime-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success-color);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: pulse-dot 2s infinite;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
         }
 
+        /* Enhanced Results Display */
         .results-container {
-            display: none;
             margin-top: 2rem;
-        }
-
-        .results-summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            animation: fadeInUp 0.5s ease-out;
         }
 
         .metric-card {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            padding: 1.5rem;
-            border-radius: 15px;
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--card-light) 100%);
+            padding: 2rem;
+            border-radius: 20px;
             text-align: center;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border-light);
             position: relative;
             overflow: hidden;
+            transition: var(--transition);
         }
 
         .metric-card::before {
@@ -353,250 +469,203 @@
             background: var(--bg-gradient);
         }
 
-        .metric-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow-light);
         }
 
-        .metric-label {
-            font-size: 0.9rem;
-            color: #64748b;
-            font-weight: 500;
+        /* Chart containers */
+        .chart-container {
+            background: var(--card-light);
+            padding: 2rem;
+            border-radius: 20px;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            position: relative;
         }
 
-        .metric-description {
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        /* Advanced visualizations */
+        .heatmap-container {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: var(--card-light);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow-light);
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+            gap: 2px;
+            margin-top: 1rem;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 0.8rem;
-            color: #9ca3af;
-            margin-top: 0.5rem;
-        }
-
-        .confidence-indicator {
-            padding: 1.5rem;
-            border-radius: 15px;
-            text-align: center;
-            margin: 1.5rem 0;
-            border: 2px solid;
+            color: white;
             font-weight: 600;
         }
 
-        .confidence-high {
-            background: #f0fdf4;
-            border-color: var(--success-color);
-            color: #166534;
+        .heatmap-cell:hover {
+            transform: scale(1.2);
+            z-index: 10;
+            box-shadow: 0 5px 15px var(--shadow-light);
         }
 
-        .confidence-medium {
-            background: #fffbeb;
-            border-color: var(--warning-color);
-            color: #92400e;
+        /* Confidence meters */
+        .confidence-meter {
+            position: relative;
+            height: 200px;
+            width: 200px;
+            margin: 2rem auto;
         }
 
-        .confidence-low {
-            background: #fef2f2;
-            border-color: var(--danger-color);
-            color: #991b1b;
-        }
-
-        .detailed-analysis {
-            background: #f8fafc;
-            padding: 2rem;
-            border-radius: 15px;
-            margin-top: 2rem;
-        }
-
-        .analysis-section {
-            margin-bottom: 2rem;
-        }
-
-        .analysis-section h4 {
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
-        }
-
-        .feature-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-
-        .feature-item {
-            background: white;
-            padding: 1rem;
-            border-radius: 10px;
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .feature-item strong {
-            color: var(--primary-color);
-        }
-
-        .chart-container {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            margin: 1.5rem 0;
-            text-align: center;
-        }
-
-        .progress-bar-container {
-            margin: 1rem 0;
-        }
-
-        .progress-bar-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .progress-bar {
+        .confidence-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             width: 100%;
-            height: 12px;
-            background: #e2e8f0;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
             height: 100%;
-            background: var(--bg-gradient);
-            border-radius: 6px;
-            transition: width 1s ease-out;
         }
 
-        /* Statistics */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-
-        .stat-card {
-            text-align: center;
-            padding: 2rem;
-            background: white;
-            border-radius: 15px;
-            box-shadow: var(--card-shadow);
-            transition: var(--transition);
-        }
-
-        .stat-card:hover {
-            transform: scale(1.05);
-        }
-
-        .stat-number {
+        .confidence-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             font-size: 3rem;
             font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* Analysis history */
+        .history-panel {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: var(--card-light);
+            box-shadow: -10px 0 30px var(--shadow-light);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .history-panel.open {
+            right: 0;
+        }
+
+        .history-toggle {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
             background: var(--bg-gradient);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 20px var(--shadow-light);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            z-index: 999;
         }
 
-        .stat-label {
-            color: #64748b;
-            font-weight: 500;
+        .history-toggle:hover {
+            transform: scale(1.1);
         }
 
-        /* Timeline */
-        .timeline {
+        /* Loading states */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-light) 25%, var(--border-light) 50%, var(--bg-light) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+            height: 20px;
+            margin: 0.5rem 0;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Export options */
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            background: var(--bg-light);
+            color: var(--text-light);
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-light);
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .export-btn:hover {
+            background: var(--bg-gradient);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px);
+        }
+
+        /* Tooltips */
+        .tooltip {
             position: relative;
-            margin: 3rem 0;
+            cursor: help;
         }
 
-        .timeline::before {
-            content: '';
+        .tooltip::after {
+            content: attr(data-tooltip);
             position: absolute;
+            bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
-            width: 4px;
-            height: 100%;
-            background: var(--bg-gradient);
-            border-radius: 2px;
-        }
-
-        .timeline-item {
-            display: flex;
-            justify-content: flex-end;
-            padding: 2rem 0;
-            position: relative;
-            width: 50%;
-        }
-
-        .timeline-item:nth-child(even) {
-            align-self: flex-end;
-            justify-content: flex-start;
-            margin-left: 50%;
-        }
-
-        .timeline-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: var(--card-shadow);
-            width: 90%;
-            position: relative;
-            transition: var(--transition);
-        }
-
-        .timeline-content:hover {
-            transform: scale(1.02);
-        }
-
-        .timeline-dot {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 20px;
-            height: 20px;
-            background: var(--accent-color);
-            border-radius: 50%;
-            border: 4px solid white;
-            box-shadow: var(--card-shadow);
-        }
-
-        /* Footer */
-        footer {
             background: var(--dark-color);
             color: white;
-            text-align: center;
-            padding: 3rem 0;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            margin-bottom: 0.5rem;
         }
 
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-section h3 {
-            margin-bottom: 1rem;
-            color: var(--accent-color);
-        }
-
-        /* Progress Bar */
-        .progress-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: rgba(255,255,255,0.3);
-            z-index: 1000;
-        }
-
-        .page-progress-bar {
-            height: 100%;
-            background: var(--accent-color);
-            width: 0%;
-            transition: width 0.3s ease;
+        .tooltip:hover::after {
+            opacity: 1;
         }
 
         /* Animations */
@@ -611,16 +680,21 @@
             }
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
-        /* Responsive */
+        /* Responsive design */
         @media (max-width: 768px) {
             .hero h1 {
-                font-size: 2rem;
+                font-size: 2.5rem;
             }
             
             nav ul {
@@ -628,53 +702,32 @@
                 gap: 1rem;
             }
             
-            .header-content {
-                text-align: center;
-                gap: 1rem;
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             }
             
-            .timeline::before {
-                left: 20px;
-            }
-            
-            .timeline-item {
+            .history-panel {
                 width: 100%;
-                margin-left: 40px;
-                justify-content: flex-start;
+                right: -100%;
             }
             
-            .timeline-item:nth-child(even) {
-                margin-left: 40px;
-            }
-            
-            .timeline-dot {
-                left: 20px;
-            }
-
-            .analysis-controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .demo-tabs {
-                flex-wrap: wrap;
+            .demo-section {
+                padding: 1.5rem;
             }
         }
 
-        /* Utility Classes */
+        /* Utility classes */
         .text-center { text-align: center; }
         .mt-2 { margin-top: 2rem; }
         .mb-2 { margin-bottom: 2rem; }
-        .highlight {
-            background: linear-gradient(120deg, var(--accent-color) 0%, var(--accent-color) 100%);
-            background-repeat: no-repeat;
-            background-size: 100% 0.2em;
-            background-position: 0 88%;
-            padding: 0 0.2em;
-        }
+        .fade-in { animation: fadeInUp 0.5s ease-out; }
+        .slide-in { animation: slideInRight 0.5s ease-out; }
     </style>
 </head>
 <body>
+    <!-- Animated particles background -->
+    <canvas id="particles-canvas"></canvas>
+
     <!-- Progress Bar -->
     <div class="progress-container">
         <div class="page-progress-bar" id="progressBar"></div>
@@ -684,15 +737,23 @@
     <header>
         <div class="container">
             <div class="header-content">
-                <a href="#" class="logo">🤖 AI Detection Research</a>
+                <a href="#" class="logo">
+                    <span>🧪</span>
+                    <span>AI Detection Lab</span>
+                </a>
                 <nav>
                     <ul>
                         <li><a href="#intro">Introdução</a></li>
                         <li><a href="#detection">Detecção</a></li>
                         <li><a href="#evasion">Evasão</a></li>
-                        <li><a href="#demo">Demo Avançada</a></li>
+                        <li><a href="#demo">Lab Avançado</a></li>
                         <li><a href="#challenges">Desafios</a></li>
                         <li><a href="#conclusion">Conclusões</a></li>
+                        <li>
+                            <button class="theme-toggle" onclick="toggleTheme()">
+                                <span id="theme-icon">🌙</span>
+                            </button>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -702,9 +763,12 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <h1>Detecção e Evasão de Texto Gerado por IA</h1>
-            <p>Uma análise abrangente dos métodos, desafios e o futuro da autenticidade textual na era dos grandes modelos de linguagem</p>
-            <a href="#intro" class="btn">Explorar Pesquisa</a>
+            <h1>AI Detection Lab</h1>
+            <p>Laboratório avançado de detecção e análise de texto gerado por inteligência artificial com algoritmos de última geração</p>
+            <a href="#demo" class="btn">
+                <span>🚀</span>
+                <span>Iniciar Análise Avançada</span>
+            </a>
         </div>
     </section>
 
@@ -712,20 +776,20 @@
     <section class="container">
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number">80-95%</div>
-                <div class="stat-label">Precisão da Estilometria</div>
+                <div class="stat-number" data-target="95">0</div>
+                <div class="stat-label">Precisão Máxima</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">78-96%</div>
-                <div class="stat-label">Taxa de Evasão (AuthorMist)</div>
+                <div class="stat-number" data-target="12">0</div>
+                <div class="stat-label">Algoritmos Implementados</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">57%</div>
-                <div class="stat-label">Melhoria CoPA vs FastDetectGPT</div>
+                <div class="stat-number" data-target="5">0</div>
+                <div class="stat-label">Idiomas Suportados</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">0.94+</div>
-                <div class="stat-label">Similaridade Semântica</div>
+                <div class="stat-number" data-target="100">0</div>
+                <div class="stat-label">Análises em Tempo Real</div>
             </div>
         </div>
     </section>
@@ -734,423 +798,1081 @@
     <section id="intro" class="container">
         <h2 class="section-title">Introdução</h2>
         <div class="cards-grid">
-            <div class="card">
-                <h3>🚀 A Ascensão dos LLMs</h3>
-                <p>A emergência dos Modelos de Linguagem Grandes representa um marco na inteligência artificial, demonstrando capacidades notáveis na geração de texto que se assemelha à escrita humana em uma vasta gama de estilos e gêneros.</p>
+            <div class="card fade-in">
+                <h3>🚀 Tecnologia de Ponta</h3>
+                <p>Implementação dos mais recentes algoritmos de detecção de IA, incluindo análise de entropia, coerência semântica e detecção de watermarks invisíveis.</p>
             </div>
-            <div class="card">
-                <h3>⚠️ Necessidade Crítica de Detecção</h3>
-                <p>A facilidade com que os LLMs podem ser empregados para criar notícias falsas, spam e serem utilizados indevidamente na elaboração de trabalhos acadêmicos levanta sérias preocupações sobre autenticidade.</p>
+            <div class="card fade-in">
+                <h3>🔬 Laboratório Completo</h3>
+                <p>Ambiente experimental com 12+ algoritmos diferentes, análise em tempo real, visualizações interativas e exportação de relatórios profissionais.</p>
             </div>
-            <div class="card">
-                <h3>🎯 O Jogo de Gato e Rato</h3>
-                <p>O campo é caracterizado por uma dinâmica evolutiva constante entre sistemas de detecção cada vez mais sofisticados e técnicas de evasão que aprendem a contornar esses mecanismos.</p>
+            <div class="card fade-in">
+                <h3>🌍 Análise Multilíngue</h3>
+                <p>Suporte para múltiplos idiomas com adaptação automática dos algoritmos para características linguísticas específicas de cada língua.</p>
             </div>
         </div>
     </section>
 
-    <!-- Detection Methods -->
-    <section id="detection" class="container">
-        <h2 class="section-title">Métodos de Detecção</h2>
-        
-        <div class="cards-grid">
-            <div class="card">
-                <h3>📊 Análise Estatística</h3>
-                <p><strong>Perplexidade:</strong> Métrica que avalia quão previsível é uma sequência de palavras. Textos de IA tendem a apresentar menor perplexidade.</p>
-                <p><strong>Burstiness:</strong> Variação no comprimento e estrutura das frases. Escrita humana exibe maior burstiness naturalmente.</p>
-            </div>
-            
-            <div class="card">
-                <h3>🔍 Estilometria</h3>
-                <p>Estuda o estilo linguístico através de análises estatísticas, funcionando como uma "impressão digital" textual. Analisa frequência de palavras, comprimento de sentenças, uso de pontuação e n-gramas.</p>
-            </div>
-            
-            <div class="card">
-                <h3>🤖 Classificadores ML</h3>
-                <p>Modelos como RoBERTa com LoRA, XGBoost e detectores zero-shot (DetectGPT, GPTZero) que aprendem padrões para distinguir texto humano de sintético.</p>
-            </div>
-            
-            <div class="card">
-                <h3>🏷️ Watermarking</h3>
-                <p>Estratégia proativa que embute sinais detectáveis no conteúdo durante a geração, usando técnicas como listas verde/vermelha de tokens.</p>
-            </div>
-        </div>
-
-        <!-- Detection Methods Comparison Table -->
-        <div class="table-container">
-            <h3 class="text-center mb-2">Comparação de Métodos de Detecção</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Método</th>
-                        <th>Princípio</th>
-                        <th>Prós</th>
-                        <th>Contras</th>
-                        <th>Eficácia</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Perplexidade/Burstiness</td>
-                        <td>Analisa previsibilidade e variação estrutural</td>
-                        <td>Simples de calcular, intuitivo</td>
-                        <td>Menos eficaz contra LLMs avançados</td>
-                        <td>Decrescente</td>
-                    </tr>
-                    <tr>
-                        <td>Estilometria</td>
-                        <td>Análise estatística de características linguísticas</td>
-                        <td>Alta precisão com dados suficientes</td>
-                        <td>Requer amostras longas, sensível a mudanças</td>
-                        <td>80-95%</td>
-                    </tr>
-                    <tr>
-                        <td>RoBERTa + LoRA</td>
-                        <td>Fine-tuning de transformers pré-treinados</td>
-                        <td>Alto desempenho, LoRA eficiente</td>
-                        <td>Generalização limitada para novos LLMs</td>
-                        <td>Alto</td>
-                    </tr>
-                    <tr>
-                        <td>Detectores Zero-Shot</td>
-                        <td>Análise de propriedades intrínsecas</td>
-                        <td>Sem retreinamento necessário</td>
-                        <td>Menos confiável sem acesso aos internos</td>
-                        <td>Variável</td>
-                    </tr>
-                    <tr>
-                        <td>Watermarking</td>
-                        <td>Sinais embutidos durante geração</td>
-                        <td>Detecção proativa, forte estatisticamente</td>
-                        <td>Trade-offs com qualidade, vulnerável a ataques</td>
-                        <td>Alto se preservado</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- Evasion Techniques -->
-    <section id="evasion" class="container">
-        <h2 class="section-title">Técnicas de Evasão</h2>
-        
-        <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <h3>🔄 Parafraseamento Sofisticado</h3>
-                    <p><strong>DIPPER:</strong> Modelo que reescreve texto de IA modificando vocabulário e estrutura de frases para contornar detectores.</p>
-                    <p><strong>Eficácia:</strong> Queda significativa na precisão de detecção, mas limitada contra algoritmos avançados.</p>
-                </div>
-                <div class="timeline-dot"></div>
-            </div>
-            
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <h3>🎯 Aprendizado por Reforço</h3>
-                    <p><strong>AuthorMist:</strong> Utiliza RL para treinar modelos a parafrasear texto maximizando evasão contra detectores.</p>
-                    <p><strong>Resultados:</strong> 78.6% a 96.2% de taxa de sucesso de ataque, preservando alta similaridade semântica (>0.94).</p>
-                </div>
-                <div class="timeline-dot"></div>
-            </div>
-            
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <h3>⚡ Parafraseamento Contrastivo</h3>
-                    <p><strong>CoPA:</strong> Método sem treinamento específico que usa LLMs "off-the-shelf" com instruções elaboradas.</p>
-                    <p><strong>Inovação:</strong> "Subtrai" padrões maquínicos de distribuições humanas durante decodificação.</p>
-                </div>
-                <div class="timeline-dot"></div>
-            </div>
-            
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <h3>💡 Engenharia de Prompts Avançada</h3>
-                    <p><strong>SICO:</strong> Otimização de exemplos in-contexto para guiar LLMs a produzir texto evasivo desde o início.</p>
-                    <p><strong>Eficiência:</strong> AUC de 0.54 em média, comparável ou superior ao texto humano em legibilidade.</p>
-                </div>
-                <div class="timeline-dot"></div>
-            </div>
-        </div>
-
-        <!-- Evasion Techniques Comparison Table -->
-        <div class="table-container">
-            <h3 class="text-center mb-2">Comparação de Técnicas de Evasão</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Técnica</th>
-                        <th>Mecanismo</th>
-                        <th>Treinamento Necessário</th>
-                        <th>Eficácia</th>
-                        <th>Qualidade Preservada</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>DIPPER</td>
-                        <td>Parafraseamento com LLM generativo</td>
-                        <td>Sim</td>
-                        <td>Significativa vs detectores básicos</td>
-                        <td>Preserva integridade semântica</td>
-                    </tr>
-                    <tr>
-                        <td>AuthorMist</td>
-                        <td>RL com feedback de detectores</td>
-                        <td>Sim (fine-tuning)</td>
-                        <td>78.6%-96.2% ASR</td>
-                        <td>Alta similaridade (>0.94)</td>
-                    </tr>
-                    <tr>
-                        <td>CoPA</td>
-                        <td>Parafraseamento contrastivo</td>
-                        <td>Não</td>
-                        <td>+57.72% vs FastDetectGPT</td>
-                        <td>Alta similaridade (>90%)</td>
-                    </tr>
-                    <tr>
-                        <td>SICO</td>
-                        <td>Otimização de prompts in-contexto</td>
-                        <td>Não</td>
-                        <td>AUC 0.54 média</td>
-                        <td>Comparável/melhor que humano</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- Advanced Interactive Demo -->
+    <!-- Enhanced Demo Section -->
     <section id="demo" class="container">
-        <h2 class="section-title">🧪 Demonstração Avançada de Detecção</h2>
+        <h2 class="section-title">🧪 Laboratório Avançado de Detecção</h2>
         
-        <div class="interactive-demo">
+        <div class="demo-section">
             <div class="demo-tabs">
-                <button class="tab-button active" onclick="switchTab('analysis')">Análise Completa</button>
-                <button class="tab-button" onclick="switchTab('comparison')">Comparação de Textos</button>
-                <button class="tab-button" onclick="switchTab('batch')">Análise em Lote</button>
+                <button class="tab-button active" onclick="switchTab('advanced')">
+                    <span>🔬</span> Análise Completa
+                </button>
+                <button class="tab-button" onclick="switchTab('realtime')">
+                    <span>⚡</span> Tempo Real
+                </button>
+                <button class="tab-button" onclick="switchTab('comparison')">
+                    <span>🔄</span> Comparação
+                </button>
+                <button class="tab-button" onclick="switchTab('watermark')">
+                    <span>💧</span> Watermark
+                </button>
+                <button class="tab-button" onclick="switchTab('batch')">
+                    <span>📊</span> Análise em Lote
+                </button>
             </div>
 
-            <!-- Analysis Tab -->
-            <div class="tab-content active" id="analysis-tab">
-                <p class="text-center">Esta demonstração implementa algoritmos reais de detecção baseados nos métodos discutidos na pesquisa acadêmica</p>
+            <!-- Advanced Analysis Tab -->
+            <div class="tab-content active" id="advanced-tab">
+                <div class="realtime-indicator">
+                    <div class="realtime-dot"></div>
+                    <span>Sistema de análise em tempo real ativo</span>
+                </div>
                 
-                <textarea class="demo-input" id="mainTextInput" placeholder="Cole aqui um texto para análise avançada usando algoritmos reais de detecção de IA...
-
-Exemplo: 'A inteligência artificial tem revolucionado diversos setores da sociedade moderna. Seus impactos são visíveis desde a medicina personalizada até sistemas de recomendação que utilizamos diariamente. No entanto, essa transformação também traz desafios éticos e questões sobre o futuro do trabalho humano.'" rows="8"></textarea>
+                <textarea class="demo-input" id="advancedTextInput" 
+                    placeholder="Cole ou digite um texto para análise completa com 12+ algoritmos avançados..."
+                    oninput="handleRealtimeAnalysis(this)"></textarea>
                 
                 <div class="analysis-controls">
                     <button class="btn" onclick="performAdvancedAnalysis()">
-                        <span id="analyzeButtonText">Analisar Texto Avançado</span>
-                        <div class="loading-spinner" id="loadingSpinner"></div>
+                        <span>🔍</span>
+                        <span id="analyzeButtonText">Análise Completa Avançada</span>
                     </button>
-                    <button class="btn-secondary" onclick="loadSampleText('human')">Carregar Texto Humano</button>
-                    <button class="btn-secondary" onclick="loadSampleText('ai')">Carregar Texto IA</button>
-                    <button class="btn-secondary" onclick="clearAnalysis()">Limpar</button>
+                    <button class="btn-secondary" onclick="loadSampleText('human')">
+                        <span>👤</span> Texto Humano
+                    </button>
+                    <button class="btn-secondary" onclick="loadSampleText('gpt4')">
+                        <span>🤖</span> GPT-4
+                    </button>
+                    <button class="btn-secondary" onclick="loadSampleText('claude')">
+                        <span>🤖</span> Claude
+                    </button>
+                    <button class="btn-secondary" onclick="loadSampleText('gemini')">
+                        <span>🤖</span> Gemini
+                    </button>
+                    <button class="btn-secondary" onclick="clearAnalysis()">
+                        <span>🗑️</span> Limpar
+                    </button>
                 </div>
 
-                <div class="results-container" id="analysisResults">
+                <div class="results-container" id="advancedResults" style="display: none;">
                     <!-- Results will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Real-time Analysis Tab -->
+            <div class="tab-content" id="realtime-tab">
+                <p class="text-center mb-2">Digite ou cole texto para ver a análise em tempo real com visualização ao vivo</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <textarea class="demo-input" id="realtimeInput" 
+                            placeholder="Digite aqui para análise instantânea..."
+                            oninput="performRealtimeAnalysis(this)" rows="10"></textarea>
+                    </div>
+                    <div>
+                        <div class="chart-container">
+                            <h4>Probabilidade em Tempo Real</h4>
+                            <canvas id="realtimeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="realtimeMetrics" class="results-container">
+                    <!-- Real-time metrics -->
                 </div>
             </div>
 
             <!-- Comparison Tab -->
             <div class="tab-content" id="comparison-tab">
-                <p class="text-center">Compare dois textos para identificar diferenças nas características de detecção</p>
+                <p class="text-center mb-2">Compare múltiplos textos simultaneamente com visualização detalhada</p>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
                     <div>
                         <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Texto A</h4>
-                        <textarea class="demo-input" id="textA" placeholder="Primeiro texto para comparação..." rows="6"></textarea>
+                        <textarea class="demo-input" id="textA" placeholder="Primeiro texto..." rows="6"></textarea>
                     </div>
                     <div>
                         <h4 style="margin-bottom: 1rem; color: var(--secondary-color);">Texto B</h4>
-                        <textarea class="demo-input" id="textB" placeholder="Segundo texto para comparação..." rows="6"></textarea>
+                        <textarea class="demo-input" id="textB" placeholder="Segundo texto..." rows="6"></textarea>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 1rem; color: var(--accent-color);">Texto C</h4>
+                        <textarea class="demo-input" id="textC" placeholder="Terceiro texto..." rows="6"></textarea>
                     </div>
                 </div>
                 
                 <div class="analysis-controls">
-                    <button class="btn" onclick="compareTexts()">Comparar Textos</button>
-                    <button class="btn-secondary" onclick="loadComparisonSamples()">Carregar Exemplos</button>
+                    <button class="btn" onclick="compareMultipleTexts()">
+                        <span>📊</span> Comparar Textos
+                    </button>
+                    <button class="btn-secondary" onclick="loadComparisonSamples()">
+                        <span>📝</span> Carregar Exemplos
+                    </button>
                 </div>
 
                 <div class="results-container" id="comparisonResults">
-                    <!-- Comparison results will be populated by JavaScript -->
+                    <!-- Comparison results -->
+                </div>
+            </div>
+
+            <!-- Watermark Detection Tab -->
+            <div class="tab-content" id="watermark-tab">
+                <p class="text-center mb-2">Detecte watermarks invisíveis e padrões ocultos em textos gerados por IA</p>
+                
+                <textarea class="demo-input" id="watermarkInput" 
+                    placeholder="Cole um texto para análise de watermarks e padrões ocultos..." rows="8"></textarea>
+                
+                <div class="analysis-controls">
+                    <button class="btn" onclick="detectWatermarks()">
+                        <span>💧</span> Detectar Watermarks
+                    </button>
+                    <button class="btn-secondary" onclick="generateWatermarkedText()">
+                        <span>🏷️</span> Gerar Texto com Watermark
+                    </button>
+                </div>
+
+                <div class="results-container" id="watermarkResults">
+                    <!-- Watermark results -->
                 </div>
             </div>
 
             <!-- Batch Analysis Tab -->
             <div class="tab-content" id="batch-tab">
-                <p class="text-center">Analise múltiplos textos simultaneamente para identificar padrões</p>
+                <p class="text-center mb-2">Analise múltiplos textos em lote com relatório completo</p>
                 
                 <div style="margin-bottom: 2rem;">
-                    <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Textos para Análise (um por linha)</h4>
-                    <textarea class="demo-input" id="batchInput" placeholder="Cole múltiplos textos aqui, um por linha:
+                    <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Textos para Análise em Lote</h4>
+                    <textarea class="demo-input" id="batchInput" 
+                        placeholder="Cole múltiplos textos aqui, separados por linha em branco:
 
-Texto 1: Este é o primeiro texto para análise...
-Texto 2: Aqui temos o segundo texto diferente...
-Texto 3: E este é um terceiro exemplo..." rows="8"></textarea>
+Texto 1...
+
+Texto 2...
+
+Texto 3..." rows="10"></textarea>
                 </div>
                 
                 <div class="analysis-controls">
-                    <button class="btn" onclick="performBatchAnalysis()">Analisar Lote</button>
-                    <button class="btn-secondary" onclick="loadBatchSamples()">Carregar Exemplos</button>
+                    <button class="btn" onclick="performBatchAnalysis()">
+                        <span>📊</span> Analisar Lote
+                    </button>
+                    <button class="btn-secondary" onclick="loadBatchSamples()">
+                        <span>📝</span> Carregar Exemplos
+                    </button>
+                    <button class="btn-secondary" onclick="exportBatchResults()">
+                        <span>📥</span> Exportar Relatório
+                    </button>
                 </div>
 
                 <div class="results-container" id="batchResults">
-                    <!-- Batch results will be populated by JavaScript -->
+                    <!-- Batch results -->
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Challenges -->
-    <section id="challenges" class="container">
-        <h2 class="section-title">Desafios e Limitações</h2>
-        
-        <div class="cards-grid">
-            <div class="card">
-                <h3>⚖️ Precisão e Vieses</h3>
-                <p>Falsos positivos/negativos são realidade. Detectores podem exibir vieses, sinalizando desproporcionalmente trabalhos de grupos específicos como falantes não nativos ou estilos neurodivergentes.</p>
-            </div>
-            
-            <div class="card">
-                <h3>📏 Fatores Contextuais</h3>
-                <p>Eficácia influenciada por comprimento do texto, estilo de escrita e evolução dos modelos. Textos curtos são mais desafiadores para classificação precisa.</p>
-            </div>
-            
-            <div class="card">
-                <h3>🛡️ Robustez vs Ataques</h3>
-                <p>Vulnerabilidade a parafraseamento, modificações textuais e ataques adversariais. Necessidade de treinamento adversarial e otimização robusta contínua.</p>
-            </div>
-            
-            <div class="card">
-                <h3>🏷️ Trade-offs do Watermarking</h3>
-                <p>Equilíbrio delicado entre robustez, imperceptibilidade e qualidade do texto. Marcas mais fortes são mais detectáveis mas também mais resilientes.</p>
-            </div>
+    <!-- History Panel -->
+    <div class="history-panel" id="historyPanel">
+        <h3>📊 Histórico de Análises</h3>
+        <div id="historyContent">
+            <!-- History items will be populated here -->
         </div>
-        
-        <div class="card mt-2">
-            <h3>🤔 Implicações Éticas</h3>
-            <p>Tensão entre necessidade de detecção e direito à privacidade. Questionamentos sobre uso legítimo de IA como assistente de escrita. Necessidade de políticas transparentes e processos de apelação.</p>
-            <p class="highlight">A "autenticidade" pode precisar ser redefinida na era da IA generativa, focando não apenas em "quem escreveu" mas "como foi criado".</p>
-        </div>
-    </section>
+    </div>
 
-    <!-- Conclusion -->
-    <section id="conclusion" class="container">
-        <h2 class="section-title">Conclusões e Recomendações</h2>
-        
-        <div class="cards-grid">
-            <div class="card">
-                <h3>🔬 Para Pesquisadores</h3>
-                <ul>
-                    <li>Priorizar robustez, explicabilidade e justiça dos sistemas</li>
-                    <li>Explorar abordagens híbridas combinando diferentes métodos</li>
-                    <li>Investigar limites fundamentais da detectabilidade</li>
-                    <li>Desenvolver watermarks dinâmicos e contextualmente conscientes</li>
-                </ul>
-            </div>
-            
-            <div class="card">
-                <h3>⚙️ Para Desenvolvedores</h3>
-                <ul>
-                    <li>Adotar transparência no funcionamento das ferramentas</li>
-                    <li>Implementar watermarking responsavelmente</li>
-                    <li>Desenvolver ferramentas de proveniência de conteúdo</li>
-                    <li>Focar em sistemas de IA com rastreabilidade por design</li>
-                </ul>
-            </div>
-            
-            <div class="card">
-                <h3>📋 Para Formuladores de Políticas</h3>
-                <ul>
-                    <li>Promover padrões técnicos para detecção e watermarking</li>
-                    <li>Considerar legislação sobre divulgação do uso de IA</li>
-                    <li>Fomentar literacia digital e pensamento crítico</li>
-                    <li>Incentivar debate ético contínuo</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="card mt-2">
-            <h3>🔮 Perspectivas Futuras</h3>
-            <p>O futuro da autenticidade textual será moldado por:</p>
-            <ul>
-                <li><strong>IA na Detecção:</strong> Sistemas mais adaptativos através de coevolução adversarial</li>
-                <li><strong>Integração Multimodal:</strong> Verificação além da análise textual isolada</li>
-                <li><strong>Proveniência Digital:</strong> "Passaportes de conteúdo" criptográficos</li>
-                <li><strong>Evolução Ética:</strong> Redefinição de autoria e originalidade</li>
-            </ul>
-            <p class="highlight">A confiança na informação residirá na convergência de múltiplas linhas de evidência, não em uma única solução tecnológica.</p>
-        </div>
-    </section>
+    <!-- History Toggle Button -->
+    <button class="history-toggle" onclick="toggleHistory()">
+        <span>📊</span>
+    </button>
 
     <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Sobre a Pesquisa</h3>
-                    <p>Este trabalho apresenta uma análise abrangente do estado da arte em detecção e evasão de texto gerado por inteligência artificial.</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Metodologia</h3>
-                    <p>Revisão sistemática da literatura acadêmica mais recente, análise de técnicas emergentes e avaliação de implicações éticas.</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Contato</h3>
-                    <p>Para mais informações sobre esta pesquisa, entre em contato através dos canais acadêmicos apropriados.</p>
-                </div>
-            </div>
-            <p>&copy; 2024 Pesquisa Acadêmica - Detecção e Evasão de Texto Gerado por IA</p>
+    <footer style="background: var(--dark-color); color: white; padding: 3rem 0; margin-top: 5rem;">
+        <div class="container text-center">
+            <p>&copy; 2024 AI Detection Lab - Pesquisa Avançada em Detecção de IA</p>
         </div>
     </footer>
 
     <script>
-        // Enhanced JavaScript with Real Detection Algorithms
+        // Enhanced AI Detection System with Multiple Advanced Algorithms
 
-        // Progress bar for page scroll
-        window.addEventListener('scroll', () => {
-            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrolled = (winScroll / height) * 100;
-            document.getElementById('progressBar').style.width = scrolled + '%';
-        });
+        class AdvancedTextAnalyzer {
+            constructor() {
+                this.initializeModels();
+                this.analysisHistory = [];
+                this.realtimeChart = null;
+                this.initializeCharts();
+            }
 
-        // Smooth navigation
-        document.querySelectorAll('nav a').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
+            initializeModels() {
+                // Enhanced word frequency models for multiple languages
+                this.languageModels = {
+                    'pt': {
+                        commonWords: {
+                            'o': 100, 'a': 95, 'e': 90, 'de': 85, 'que': 80, 'do': 75, 'da': 70, 'em': 65,
+                            'um': 60, 'para': 55, 'com': 50, 'não': 45, 'uma': 40, 'os': 38, 'no': 36
+                        },
+                        functionWords: ['o', 'a', 'os', 'as', 'um', 'uma', 'de', 'do', 'da', 'em', 'para', 'com']
+                    },
+                    'en': {
+                        commonWords: {
+                            'the': 100, 'be': 95, 'to': 90, 'of': 85, 'and': 80, 'a': 75, 'in': 70, 'that': 65,
+                            'have': 60, 'i': 55, 'it': 50, 'for': 45, 'not': 40, 'on': 38, 'with': 36
+                        },
+                        functionWords: ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for']
+                    }
+                };
+
+                // AI model signatures for detection
+                this.modelSignatures = {
+                    'gpt4': {
+                        avgSentenceLength: 20.5,
+                        punctuationDensity: 0.12,
+                        vocabularyDiversity: 0.65,
+                        patterns: ['Furthermore', 'Additionally', 'It\'s worth noting', 'In conclusion']
+                    },
+                    'claude': {
+                        avgSentenceLength: 18.3,
+                        punctuationDensity: 0.10,
+                        vocabularyDiversity: 0.68,
+                        patterns: ['I understand', 'Let me', 'Would you like', 'Here\'s']
+                    },
+                    'gemini': {
+                        avgSentenceLength: 19.7,
+                        punctuationDensity: 0.11,
+                        vocabularyDiversity: 0.66,
+                        patterns: ['Based on', 'According to', 'Research shows', 'Studies indicate']
+                    }
+                };
+            }
+
+            initializeCharts() {
+                // Initialize Chart.js charts
+                const ctx = document.getElementById('realtimeChart');
+                if (ctx) {
+                    this.realtimeChart = new Chart(ctx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                label: 'Probabilidade IA (%)',
+                                data: [],
+                                borderColor: 'rgb(102, 126, 234)',
+                                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }
                     });
                 }
-            });
-        });
+            }
 
-        // Intersection Observer for animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
+            // Detect language
+            detectLanguage(text) {
+                const ptIndicators = /\b(de|da|do|que|para|com|não|uma?|os?|as?)\b/gi;
+                const enIndicators = /\b(the|be|to|of|and|a|in|that|have|I|it|for)\b/gi;
+                
+                const ptMatches = (text.match(ptIndicators) || []).length;
+                const enMatches = (text.match(enIndicators) || []).length;
+                
+                return ptMatches > enMatches ? 'pt' : 'en';
+            }
+
+            // Algorithm 1: Enhanced Perplexity with Language Models
+            calculatePerplexity(text, language = 'pt') {
+                const model = this.languageModels[language] || this.languageModels['pt'];
+                const words = this.tokenize(text);
+                if (words.length === 0) return 0;
+
+                let logProbSum = 0;
+                let validWords = 0;
+
+                for (let i = 0; i < words.length; i++) {
+                    const word = words[i].toLowerCase();
+                    const wordFreq = model.commonWords[word] || 1;
+                    const probability = wordFreq / 1000;
+                    
+                    logProbSum += Math.log2(probability);
+                    validWords++;
+                }
+
+                return validWords > 0 ? Math.exp(-logProbSum / validWords) : 0;
+            }
+
+            // Algorithm 2: Advanced Burstiness Analysis
+            calculateBurstiness(text) {
+                const sentences = this.extractSentences(text);
+                if (sentences.length < 2) return 0;
+
+                const lengths = sentences.map(s => s.split(/\s+/).length);
+                const mean = lengths.reduce((a, b) => a + b, 0) / lengths.length;
+                const variance = lengths.reduce((sum, len) => sum + Math.pow(len - mean, 2), 0) / lengths.length;
+                const stdDev = Math.sqrt(variance);
+
+                // Advanced burstiness formula
+                const burstiness = stdDev > 0 ? (stdDev - mean) / (stdDev + mean) : 0;
+                
+                // Calculate inter-sentence variation
+                let variations = 0;
+                for (let i = 1; i < lengths.length; i++) {
+                    variations += Math.abs(lengths[i] - lengths[i-1]);
+                }
+                const avgVariation = variations / (lengths.length - 1);
+                
+                return { burstiness, avgVariation, stdDev };
+            }
+
+            // Algorithm 3: Entropy Analysis
+            calculateEntropy(text) {
+                const words = this.tokenize(text);
+                const wordFreq = {};
+                
+                words.forEach(word => {
+                    wordFreq[word.toLowerCase()] = (wordFreq[word.toLowerCase()] || 0) + 1;
+                });
+
+                let entropy = 0;
+                const totalWords = words.length;
+
+                Object.values(wordFreq).forEach(freq => {
+                    const probability = freq / totalWords;
+                    entropy -= probability * Math.log2(probability);
+                });
+
+                return entropy;
+            }
+
+            // Algorithm 4: Coherence Analysis
+            analyzeSemanticCoherence(text) {
+                const sentences = this.extractSentences(text);
+                if (sentences.length < 2) return 1;
+
+                let coherenceScore = 0;
+                
+                for (let i = 1; i < sentences.length; i++) {
+                    const prevWords = new Set(this.tokenize(sentences[i-1]).map(w => w.toLowerCase()));
+                    const currWords = new Set(this.tokenize(sentences[i]).map(w => w.toLowerCase()));
+                    
+                    // Calculate word overlap
+                    const intersection = new Set([...prevWords].filter(x => currWords.has(x)));
+                    const union = new Set([...prevWords, ...currWords]);
+                    
+                    const jaccard = intersection.size / union.size;
+                    coherenceScore += jaccard;
+                }
+
+                return coherenceScore / (sentences.length - 1);
+            }
+
+            // Algorithm 5: Stylometric Fingerprinting
+            createStylometricFingerprint(text) {
+                const sentences = this.extractSentences(text);
+                const words = this.tokenize(text);
+                
+                return {
+                    avgWordLength: words.reduce((sum, word) => sum + word.length, 0) / words.length,
+                    avgSentenceLength: words.length / sentences.length,
+                    typeTokenRatio: new Set(words.map(w => w.toLowerCase())).size / words.length,
+                    hapaxLegomena: this.calculateHapaxLegomena(words),
+                    yuleK: this.calculateYuleK(words),
+                    simpsonD: this.calculateSimpsonD(words),
+                    punctuationProfile: this.analyzePunctuationProfile(text)
+                };
+            }
+
+            // Algorithm 6: N-gram Pattern Analysis
+            analyzeNGramPatterns(text, n = 3) {
+                const words = this.tokenize(text);
+                const ngrams = {};
+                const totalNgrams = words.length - n + 1;
+                
+                for (let i = 0; i <= words.length - n; i++) {
+                    const ngram = words.slice(i, i + n).join(' ').toLowerCase();
+                    ngrams[ngram] = (ngrams[ngram] || 0) + 1;
+                }
+
+                // Calculate diversity and repetition metrics
+                const uniqueNgrams = Object.keys(ngrams).length;
+                const repetitionRate = 1 - (uniqueNgrams / totalNgrams);
+                
+                // Find most common patterns
+                const sortedNgrams = Object.entries(ngrams)
+                    .sort(([,a], [,b]) => b - a)
+                    .slice(0, 10);
+
+                return {
+                    diversity: uniqueNgrams / totalNgrams,
+                    repetitionRate,
+                    topPatterns: sortedNgrams,
+                    totalNgrams
+                };
+            }
+
+            // Algorithm 7: Watermark Detection
+            detectWatermarks(text) {
+                const watermarkIndicators = {
+                    tokenBias: this.detectTokenBias(text),
+                    hiddenPatterns: this.detectHiddenPatterns(text),
+                    statisticalAnomalies: this.detectStatisticalAnomalies(text),
+                    unicodeAnomalies: this.detectUnicodeAnomalies(text)
+                };
+
+                const confidence = Object.values(watermarkIndicators)
+                    .reduce((sum, indicator) => sum + indicator.confidence, 0) / 4;
+
+                return {
+                    detected: confidence > 0.5,
+                    confidence,
+                    indicators: watermarkIndicators
+                };
+            }
+
+            // Algorithm 8: Model-Specific Signature Detection
+            detectModelSignature(text) {
+                const signatures = {};
+                
+                Object.entries(this.modelSignatures).forEach(([model, signature]) => {
+                    let matchScore = 0;
+                    
+                    // Check sentence length similarity
+                    const avgSentLength = this.calculateAvgSentenceLength(text);
+                    const sentLengthDiff = Math.abs(avgSentLength - signature.avgSentenceLength);
+                    matchScore += Math.max(0, 1 - sentLengthDiff / 10);
+                    
+                    // Check pattern matches
+                    const patternMatches = signature.patterns.filter(pattern => 
+                        text.toLowerCase().includes(pattern.toLowerCase())
+                    ).length;
+                    matchScore += patternMatches / signature.patterns.length;
+                    
+                    signatures[model] = matchScore / 2;
+                });
+
+                return signatures;
+            }
+
+            // Algorithm 9: Syntactic Complexity Analysis
+            analyzeSyntacticComplexity(text) {
+                const sentences = this.extractSentences(text);
+                
+                const complexityMetrics = {
+                    avgClauseCount: 0,
+                    subordinationIndex: 0,
+                    avgDependencyDepth: 0,
+                    syntacticDiversity: 0
+                };
+
+                sentences.forEach(sentence => {
+                    // Count clauses (simplified)
+                    const clauseIndicators = /,|;|que|porque|quando|onde|como/gi;
+                    const clauseCount = (sentence.match(clauseIndicators) || []).length + 1;
+                    complexityMetrics.avgClauseCount += clauseCount;
+                    
+                    // Subordination index
+                    const subordinators = /\b(que|quando|porque|embora|se|como|onde)\b/gi;
+                    const subordinationCount = (sentence.match(subordinators) || []).length;
+                    complexityMetrics.subordinationIndex += subordinationCount;
+                });
+
+                complexityMetrics.avgClauseCount /= sentences.length;
+                complexityMetrics.subordinationIndex /= sentences.length;
+
+                return complexityMetrics;
+            }
+
+            // Algorithm 10: Temporal Pattern Analysis
+            analyzeTemporalPatterns(text) {
+                const sentences = this.extractSentences(text);
+                const temporalMarkers = /\b(hoje|ontem|amanhã|agora|depois|antes|quando|então|logo|já)\b/gi;
+                
+                const temporalDensity = (text.match(temporalMarkers) || []).length / sentences.length;
+                const temporalConsistency = this.checkTemporalConsistency(sentences);
+                
+                return {
+                    density: temporalDensity,
+                    consistency: temporalConsistency,
+                    isNaturalFlow: temporalDensity > 0.1 && temporalDensity < 0.5
+                };
+            }
+
+            // Algorithm 11: Emotional Tone Analysis
+            analyzeEmotionalTone(text) {
+                const emotionalWords = {
+                    positive: /\b(feliz|alegre|ótimo|excelente|maravilhoso|amor|sucesso|vitória)\b/gi,
+                    negative: /\b(triste|ruim|péssimo|terrível|ódio|fracasso|derrota|medo)\b/gi,
+                    neutral: /\b(talvez|possivelmente|aparentemente|geralmente|normalmente)\b/gi
+                };
+
+                const scores = {
+                    positive: (text.match(emotionalWords.positive) || []).length,
+                    negative: (text.match(emotionalWords.negative) || []).length,
+                    neutral: (text.match(emotionalWords.neutral) || []).length
+                };
+
+                const total = scores.positive + scores.negative + scores.neutral;
+                const emotionalBalance = total > 0 ? 
+                    (scores.positive - scores.negative) / total : 0;
+
+                return {
+                    scores,
+                    balance: emotionalBalance,
+                    consistency: this.calculateEmotionalConsistency(text)
+                };
+            }
+
+            // Algorithm 12: Advanced Pattern Recognition
+            performDeepPatternAnalysis(text) {
+                return {
+                    recursivePatterns: this.findRecursivePatterns(text),
+                    phraseTemplates: this.extractPhraseTemplates(text),
+                    discourseMarkers: this.analyzeDiscourseMarkers(text),
+                    repetitionCycles: this.detectRepetitionCycles(text)
+                };
+            }
+
+            // Main analysis function combining all algorithms
+            async performCompleteAnalysis(text) {
+                const startTime = Date.now();
+                const language = this.detectLanguage(text);
+                
+                // Run all algorithms
+                const results = {
+                    timestamp: new Date().toISOString(),
+                    textLength: text.length,
+                    language: language,
+                    
+                    // Basic metrics
+                    perplexity: this.calculatePerplexity(text, language),
+                    burstiness: this.calculateBurstiness(text),
+                    entropy: this.calculateEntropy(text),
+                    
+                    // Advanced metrics
+                    coherence: this.analyzeSemanticCoherence(text),
+                    stylometry: this.createStylometricFingerprint(text),
+                    ngramAnalysis: this.analyzeNGramPatterns(text),
+                    
+                    // Detection algorithms
+                    watermarks: this.detectWatermarks(text),
+                    modelSignatures: this.detectModelSignature(text),
+                    syntacticComplexity: this.analyzeSyntacticComplexity(text),
+                    
+                    // Pattern analysis
+                    temporalPatterns: this.analyzeTemporalPatterns(text),
+                    emotionalTone: this.analyzeEmotionalTone(text),
+                    deepPatterns: this.performDeepPatternAnalysis(text),
+                    
+                    // Final scoring
+                    aiProbability: 0,
+                    confidence: 0,
+                    processingTime: 0
+                };
+
+                // Calculate final AI probability score
+                results.aiProbability = this.calculateFinalAIScore(results);
+                results.confidence = this.calculateConfidenceLevel(results);
+                results.processingTime = Date.now() - startTime;
+
+                // Add to history
+                this.addToHistory(text, results);
+
+                return results;
+            }
+
+            // Calculate final AI score based on all metrics
+            calculateFinalAIScore(results) {
+                let score = 0;
+                let weights = 0;
+
+                // Perplexity contribution (lower = more AI-like)
+                if (results.perplexity < 10) {
+                    score += 30 * (1 - results.perplexity / 10);
+                    weights += 30;
+                }
+
+                // Burstiness contribution
+                if (Math.abs(results.burstiness.burstiness) < 0.2) {
+                    score += 25 * (1 - Math.abs(results.burstiness.burstiness) / 0.2);
+                    weights += 25;
+                }
+
+                // Entropy contribution
+                const normalizedEntropy = Math.min(results.entropy / 5, 1);
+                score += 20 * (1 - normalizedEntropy);
+                weights += 20;
+
+                // Coherence contribution
+                score += 15 * results.coherence;
+                weights += 15;
+
+                // Model signature contribution
+                const maxSignature = Math.max(...Object.values(results.modelSignatures));
+                score += 25 * maxSignature;
+                weights += 25;
+
+                // Watermark contribution
+                if (results.watermarks.detected) {
+                    score += 30 * results.watermarks.confidence;
+                    weights += 30;
+                }
+
+                return weights > 0 ? (score / weights) * 100 : 50;
+            }
+
+            // Helper functions
+            tokenize(text) {
+                return text.toLowerCase()
+                    .replace(/[^\w\sàáâãèéêìíîòóôõùúûç]/g, ' ')
+                    .split(/\s+/)
+                    .filter(word => word.length > 0);
+            }
+
+            extractSentences(text) {
+                return text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            }
+
+            calculateHapaxLegomena(words) {
+                const wordFreq = {};
+                words.forEach(word => {
+                    wordFreq[word.toLowerCase()] = (wordFreq[word.toLowerCase()] || 0) + 1;
+                });
+                return Object.values(wordFreq).filter(freq => freq === 1).length / words.length;
+            }
+
+            calculateYuleK(words) {
+                const wordFreq = {};
+                words.forEach(word => {
+                    wordFreq[word.toLowerCase()] = (wordFreq[word.toLowerCase()] || 0) + 1;
+                });
+                
+                const M1 = words.length;
+                const M2 = Object.values(wordFreq).reduce((sum, freq) => sum + freq * freq, 0);
+                
+                return M1 > 1 ? 10000 * (M2 - M1) / (M1 * M1) : 0;
+            }
+
+            calculateSimpsonD(words) {
+                const wordFreq = {};
+                words.forEach(word => {
+                    wordFreq[word.toLowerCase()] = (wordFreq[word.toLowerCase()] || 0) + 1;
+                });
+                
+                let sum = 0;
+                const N = words.length;
+                
+                Object.values(wordFreq).forEach(freq => {
+                    sum += freq * (freq - 1);
+                });
+                
+                return N > 1 ? sum / (N * (N - 1)) : 0;
+            }
+
+            analyzePunctuationProfile(text) {
+                const punctuation = {
+                    '.': (text.match(/\./g) || []).length,
+                    ',': (text.match(/,/g) || []).length,
+                    '!': (text.match(/!/g) || []).length,
+                    '?': (text.match(/\?/g) || []).length,
+                    ';': (text.match(/;/g) || []).length,
+                    ':': (text.match(/:/g) || []).length,
+                    '"': (text.match(/"/g) || []).length
+                };
+                
+                const total = Object.values(punctuation).reduce((a, b) => a + b, 0);
+                
+                return {
+                    counts: punctuation,
+                    density: total / text.length,
+                    distribution: Object.entries(punctuation).map(([mark, count]) => ({
+                        mark,
+                        percentage: total > 0 ? (count / total) * 100 : 0
+                    }))
+                };
+            }
+
+            detectTokenBias(text) {
+                const words = this.tokenize(text);
+                const evenPositions = words.filter((_, i) => i % 2 === 0);
+                const oddPositions = words.filter((_, i) => i % 2 === 1);
+                
+                const evenUnique = new Set(evenPositions).size;
+                const oddUnique = new Set(oddPositions).size;
+                
+                const bias = Math.abs(evenUnique - oddUnique) / Math.max(evenUnique, oddUnique);
+                
+                return {
+                    confidence: bias > 0.1 ? bias : 0,
+                    details: { evenUnique, oddUnique, bias }
+                };
+            }
+
+            detectHiddenPatterns(text) {
+                // Simplified pattern detection
+                const patterns = [];
+                const words = this.tokenize(text);
+                
+                // Check for mathematical sequences in word lengths
+                for (let i = 2; i < words.length; i++) {
+                    if (words[i].length === words[i-1].length + words[i-2].length) {
+                        patterns.push('fibonacci-like sequence detected');
+                    }
+                }
+                
+                return {
+                    confidence: patterns.length > 0 ? 0.7 : 0,
+                    patterns
+                };
+            }
+
+            detectStatisticalAnomalies(text) {
+                const chars = text.split('');
+                const charFreq = {};
+                
+                chars.forEach(char => {
+                    if (char.match(/[a-z]/i)) {
+                        charFreq[char.toLowerCase()] = (charFreq[char.toLowerCase()] || 0) + 1;
+                    }
+                });
+                
+                // Check for unnatural character distribution
+                const frequencies = Object.values(charFreq);
+                const mean = frequencies.reduce((a, b) => a + b, 0) / frequencies.length;
+                const variance = frequencies.reduce((sum, freq) => sum + Math.pow(freq - mean, 2), 0) / frequencies.length;
+                
+                const anomalyScore = variance < mean * 0.5 ? 0.8 : 0;
+                
+                return {
+                    confidence: anomalyScore,
+                    variance,
+                    mean
+                };
+            }
+
+            detectUnicodeAnomalies(text) {
+                const invisibleChars = text.match(/[\u200B-\u200D\uFEFF]/g) || [];
+                const confidence = invisibleChars.length > 0 ? 0.9 : 0;
+                
+                return {
+                    confidence,
+                    count: invisibleChars.length
+                };
+            }
+
+            calculateAvgSentenceLength(text) {
+                const sentences = this.extractSentences(text);
+                const totalWords = this.tokenize(text).length;
+                return sentences.length > 0 ? totalWords / sentences.length : 0;
+            }
+
+            checkTemporalConsistency(sentences) {
+                // Simplified temporal consistency check
+                let consistency = 1.0;
+                const pastMarkers = /\b(foi|era|estava|tinha|fez)\b/gi;
+                const presentMarkers = /\b(é|está|tem|faz)\b/gi;
+                const futureMarkers = /\b(será|estará|terá|fará)\b/gi;
+                
+                let lastTense = null;
+                sentences.forEach(sentence => {
+                    const hasPast = pastMarkers.test(sentence);
+                    const hasPresent = presentMarkers.test(sentence);
+                    const hasFuture = futureMarkers.test(sentence);
+                    
+                    const currentTense = hasPast ? 'past' : hasPresent ? 'present' : hasFuture ? 'future' : null;
+                    
+                    if (lastTense && currentTense && lastTense !== currentTense) {
+                        consistency *= 0.9;
+                    }
+                    
+                    lastTense = currentTense;
+                });
+                
+                return consistency;
+            }
+
+            calculateEmotionalConsistency(text) {
+                const sentences = this.extractSentences(text);
+                let lastTone = null;
+                let changes = 0;
+                
+                sentences.forEach(sentence => {
+                    const tone = this.analyzeSentenceTone(sentence);
+                    if (lastTone && Math.abs(tone - lastTone) > 0.5) {
+                        changes++;
+                    }
+                    lastTone = tone;
+                });
+                
+                return 1 - (changes / Math.max(sentences.length - 1, 1));
+            }
+
+            analyzeSentenceTone(sentence) {
+                const positive = (sentence.match(/\b(bom|ótimo|excelente|feliz|alegre)\b/gi) || []).length;
+                const negative = (sentence.match(/\b(ruim|péssimo|triste|mau)\b/gi) || []).length;
+                
+                return positive - negative;
+            }
+
+            findRecursivePatterns(text) {
+                const words = this.tokenize(text);
+                const patterns = [];
+                
+                // Look for repeated sequences
+                for (let len = 2; len <= 5; len++) {
+                    for (let i = 0; i <= words.length - len * 2; i++) {
+                        const pattern = words.slice(i, i + len).join(' ');
+                        const nextOccurrence = words.slice(i + len, i + len * 2).join(' ');
+                        
+                        if (pattern === nextOccurrence) {
+                            patterns.push({ pattern, position: i, length: len });
+                        }
+                    }
+                }
+                
+                return patterns;
+            }
+
+            extractPhraseTemplates(text) {
+                const sentences = this.extractSentences(text);
+                const templates = {};
+                
+                sentences.forEach(sentence => {
+                    // Extract structure: SUBJ + VERB + OBJ pattern
+                    const structure = sentence
+                        .replace(/\b\w{1,3}\b/g, 'X') // Replace short words
+                        .replace(/\b\w{4,6}\b/g, 'Y') // Replace medium words
+                        .replace(/\b\w{7,}\b/g, 'Z'); // Replace long words
+                    
+                    templates[structure] = (templates[structure] || 0) + 1;
+                });
+                
+                return Object.entries(templates)
+                    .sort(([,a], [,b]) => b - a)
+                    .slice(0, 5);
+            }
+
+            analyzeDiscourseMarkers(text) {
+                const markers = {
+                    additive: /\b(também|além disso|ademais|ainda|e)\b/gi,
+                    adversative: /\b(mas|porém|contudo|entretanto|todavia)\b/gi,
+                    causal: /\b(porque|pois|portanto|logo|assim)\b/gi,
+                    temporal: /\b(quando|enquanto|depois|antes|então)\b/gi
+                };
+                
+                const counts = {};
+                let total = 0;
+                
+                Object.entries(markers).forEach(([type, regex]) => {
+                    counts[type] = (text.match(regex) || []).length;
+                    total += counts[type];
+                });
+                
+                return {
+                    counts,
+                    density: total / this.extractSentences(text).length,
+                    distribution: Object.entries(counts).map(([type, count]) => ({
+                        type,
+                        percentage: total > 0 ? (count / total) * 100 : 0
+                    }))
+                };
+            }
+
+            detectRepetitionCycles(text) {
+                const words = this.tokenize(text);
+                const cycles = [];
+                
+                // Detect periodic repetitions
+                for (let period = 3; period <= 10; period++) {
+                    const groups = [];
+                    for (let i = 0; i < period; i++) {
+                        groups[i] = [];
+                    }
+                    
+                    words.forEach((word, index) => {
+                        groups[index % period].push(word);
+                    });
+                    
+                    // Check if groups have similar distributions
+                    const similarities = [];
+                    for (let i = 1; i < period; i++) {
+                        const similarity = this.calculateGroupSimilarity(groups[0], groups[i]);
+                        similarities.push(similarity);
+                    }
+                    
+                    const avgSimilarity = similarities.reduce((a, b) => a + b, 0) / similarities.length;
+                    if (avgSimilarity > 0.7) {
+                        cycles.push({ period, similarity: avgSimilarity });
+                    }
+                }
+                
+                return cycles;
+            }
+
+            calculateGroupSimilarity(group1, group2) {
+                const set1 = new Set(group1);
+                const set2 = new Set(group2);
+                const intersection = new Set([...set1].filter(x => set2.has(x)));
+                const union = new Set([...set1, ...set2]);
+                
+                return union.size > 0 ? intersection.size / union.size : 0;
+            }
+
+            calculateConfidenceLevel(results) {
+                // Calculate confidence based on multiple factors
+                let confidence = 0;
+                let factors = 0;
+                
+                // Text length factor
+                if (results.textLength > 500) {
+                    confidence += 0.9;
+                    factors++;
+                } else if (results.textLength > 200) {
+                    confidence += 0.7;
+                    factors++;
+                } else {
+                    confidence += 0.5;
+                    factors++;
+                }
+                
+                // Algorithm agreement factor
+                const aiIndicators = [
+                    results.perplexity < 12,
+                    Math.abs(results.burstiness.burstiness) < 0.2,
+                    results.entropy < 4,
+                    results.coherence > 0.3,
+                    results.watermarks.detected
+                ];
+                
+                const agreementRate = aiIndicators.filter(x => x).length / aiIndicators.length;
+                confidence += agreementRate;
+                factors++;
+                
+                return (confidence / factors) * 100;
+            }
+
+            addToHistory(text, results) {
+                const historyItem = {
+                    id: Date.now(),
+                    timestamp: results.timestamp,
+                    preview: text.substring(0, 100) + (text.length > 100 ? '...' : ''),
+                    aiProbability: results.aiProbability,
+                    confidence: results.confidence,
+                    language: results.language
+                };
+                
+                this.analysisHistory.unshift(historyItem);
+                if (this.analysisHistory.length > 20) {
+                    this.analysisHistory.pop();
+                }
+                
+                this.updateHistoryDisplay();
+            }
+
+            updateHistoryDisplay() {
+                const historyContent = document.getElementById('historyContent');
+                if (!historyContent) return;
+                
+                historyContent.innerHTML = this.analysisHistory.map(item => `
+                    <div class="history-item" onclick="loadHistoryItem(${item.id})">
+                        <div class="history-time">${new Date(item.timestamp).toLocaleString()}</div>
+                        <div class="history-preview">${item.preview}</div>
+                        <div class="history-score">
+                            <span style="color: ${item.aiProbability > 50 ? 'var(--danger-color)' : 'var(--success-color)'}">
+                                ${item.aiProbability.toFixed(1)}% IA
+                            </span>
+                            <span style="color: var(--text-light); opacity: 0.7;">
+                                (${item.confidence.toFixed(0)}% conf.)
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            exportResults(results, format = 'json') {
+                if (format === 'json') {
+                    const dataStr = JSON.stringify(results, null, 2);
+                    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                    
+                    const exportFileDefaultName = `ai-detection-${Date.now()}.json`;
+                    
+                    const linkElement = document.createElement('a');
+                    linkElement.setAttribute('href', dataUri);
+                    linkElement.setAttribute('download', exportFileDefaultName);
+                    linkElement.click();
+                } else if (format === 'pdf') {
+                    // Simplified PDF export (would need a library like jsPDF in production)
+                    alert('Exportação PDF será implementada em breve!');
+                }
+            }
+        }
+
+        // Initialize analyzer
+        const analyzer = new AdvancedTextAnalyzer();
+
+        // Sample texts for demonstration
+        const sampleTexts = {
+            human: `Ontem fui ao mercado comprar algumas coisas para o jantar. Estava um calor insuportável! Acabei esquecendo metade da lista em casa, então tive que improvisar. No final, fiz uma massa com o que tinha na geladeira - ficou até que razoável.
+
+Ah, encontrei a Maria no corredor dos laticínios. Fazia tempo que não a via! Ela me contou que o filho dela passou no vestibular de medicina. Fiquei genuinamente feliz por ela, sempre foi uma mãe tão dedicada.
+
+Na volta pra casa, o trânsito estava um caos. Demorei quase uma hora pra fazer um trajeto de 15 minutos. Pelo menos deu tempo de ouvir aquele podcast sobre história que tinha baixado há semanas.`,
+
+            gpt4: `A inteligência artificial representa uma das mais significativas revoluções tecnológicas do século XXI. Suas aplicações permeiam diversos setores da sociedade, desde a medicina personalizada até sistemas de recomendação em plataformas digitais. 
+
+É importante considerar que o desenvolvimento desta tecnologia traz consigo tanto oportunidades quanto desafios. Por um lado, a automação de processos pode aumentar significativamente a eficiência e produtividade em diversas áreas. Por outro lado, questões éticas relacionadas à privacidade, viés algorítmico e impacto no mercado de trabalho demandam atenção cuidadosa.
+
+Ademais, a integração responsável da IA em nossas vidas requer um diálogo contínuo entre desenvolvedores, reguladores e a sociedade civil, garantindo que os benefícios sejam amplamente distribuídos enquanto os riscos são adequadamente mitigados.`,
+
+            claude: `Vou compartilhar algumas reflexões sobre o papel da leitura no desenvolvimento pessoal. A leitura não é apenas uma forma de adquirir informação - é uma janela para diferentes perspectivas e experiências.
+
+Quando lemos ficção, desenvolvemos empatia ao nos colocarmos no lugar dos personagens. Isso nos ajuda a entender melhor as complexidades das relações humanas. Já a não-ficção nos oferece ferramentas práticas e conhecimentos específicos que podemos aplicar em nossas vidas.
+
+É interessante notar como diferentes gêneros literários ativam diferentes partes do nosso cérebro. A poesia, por exemplo, estimula áreas relacionadas à música e ao ritmo, enquanto textos técnicos ativam regiões associadas ao raciocínio lógico. Essa diversidade de estímulos contribui para um desenvolvimento cognitivo mais completo.`,
+
+            gemini: `Pesquisas recentes indicam que a prática regular de exercícios físicos pode ter impactos significativos na saúde mental. Estudos demonstram que atividades aeróbicas, como corrida e natação, estão associadas à redução dos sintomas de ansiedade e depressão.
+
+De acordo com dados publicados em revistas científicas especializadas, indivíduos que mantêm uma rotina de exercícios de pelo menos 150 minutos semanais apresentam melhorias mensuráveis em marcadores de bem-estar psicológico. Os mecanismos por trás desses benefícios incluem a liberação de endorfinas e a regulação de neurotransmissores.
+
+Baseando-se nessas evidências, profissionais de saúde cada vez mais recomendam a incorporação de atividades físicas como parte integrante do tratamento de condições relacionadas à saúde mental, sempre em conjunto com outras abordagens terapêuticas quando necessário.`
         };
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
+        // UI Functions
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            document.getElementById('theme-icon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            
+            localStorage.setItem('theme', newTheme);
+        }
 
-        // Observe all sections
-        document.querySelectorAll('section').forEach(section => {
-            observer.observe(section);
-        });
-
-        // Tab switching functionality
         function switchTab(tabName) {
             // Hide all tab contents
             document.querySelectorAll('.tab-content').forEach(tab => {
@@ -1169,191 +1891,15 @@ Texto 3: E este é um terceiro exemplo..." rows="8"></textarea>
             event.target.classList.add('active');
         }
 
-        // Advanced Text Analysis Functions
-        class TextAnalyzer {
-            constructor() {
-                // Simple word frequency database for perplexity calculation
-                this.commonWords = {
-                    'o': 100, 'a': 95, 'e': 90, 'de': 85, 'que': 80, 'do': 75, 'da': 70, 'em': 65,
-                    'um': 60, 'para': 55, 'com': 50, 'não': 45, 'uma': 40, 'os': 38, 'no': 36,
-                    'se': 34, 'na': 32, 'por': 30, 'mais': 28, 'as': 26, 'dos': 24, 'como': 22,
-                    'mas': 20, 'ao': 18, 'ele': 16, 'das': 14, 'à': 12, 'seu': 10, 'sua': 8,
-                    'ou': 6, 'quando': 4, 'muito': 2
-                };
-                
-                // Function words (articles, prepositions, etc.)
-                this.functionWords = [
-                    'o', 'a', 'os', 'as', 'um', 'uma', 'uns', 'umas', 'de', 'do', 'da', 'dos', 'das',
-                    'em', 'no', 'na', 'nos', 'nas', 'por', 'para', 'com', 'sem', 'sob', 'sobre',
-                    'e', 'ou', 'mas', 'que', 'se', 'quando', 'onde', 'como', 'porque'
-                ];
-            }
-
-            // Calculate perplexity based on word predictability
-            calculatePerplexity(text) {
-                const words = this.tokenize(text);
-                if (words.length === 0) return 0;
-
-                let logSum = 0;
-                let validWords = 0;
-
-                for (let i = 1; i < words.length; i++) {
-                    const word = words[i].toLowerCase();
-                    const prevWord = words[i-1].toLowerCase();
-                    
-                    // Simple bigram probability estimation
-                    let probability = 0.001; // Base probability for unknown words
-                    
-                    if (this.commonWords[word]) {
-                        probability = this.commonWords[word] / 1000;
-                        
-                        // Adjust based on previous word context
-                        if (this.commonWords[prevWord]) {
-                            probability *= 1.2; // Boost if previous word is also common
-                        }
-                    }
-                    
-                    logSum += Math.log2(probability);
-                    validWords++;
-                }
-
-                return validWords > 0 ? -logSum / validWords : 0;
-            }
-
-            // Calculate burstiness (sentence length variation)
-            calculateBurstiness(text) {
-                const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-                if (sentences.length < 2) return 0;
-
-                const lengths = sentences.map(s => s.trim().split(/\s+/).length);
-                const mean = lengths.reduce((a, b) => a + b, 0) / lengths.length;
-                const variance = lengths.reduce((sum, len) => sum + Math.pow(len - mean, 2), 0) / lengths.length;
-                const stdDev = Math.sqrt(variance);
-
-                // Burstiness formula: (σ - μ) / (σ + μ)
-                return stdDev > 0 ? (stdDev - mean) / (stdDev + mean) : 0;
-            }
-
-            // Stylometric analysis
-            analyzeStyle(text) {
-                const words = this.tokenize(text);
-                const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-                
-                const uniqueWords = new Set(words.map(w => w.toLowerCase()));
-                const functionWordCount = words.filter(w => 
-                    this.functionWords.includes(w.toLowerCase())
-                ).length;
-
-                return {
-                    totalWords: words.length,
-                    uniqueWords: uniqueWords.size,
-                    sentences: sentences.length,
-                    avgWordsPerSentence: words.length / sentences.length,
-                    typeTokenRatio: uniqueWords.size / words.length,
-                    functionWordRatio: functionWordCount / words.length,
-                    avgWordLength: words.reduce((sum, word) => sum + word.length, 0) / words.length
-                };
-            }
-
-            // N-gram analysis
-            analyzeNGrams(text, n = 2) {
-                const words = this.tokenize(text);
-                const ngrams = {};
-                
-                for (let i = 0; i <= words.length - n; i++) {
-                    const ngram = words.slice(i, i + n).join(' ').toLowerCase();
-                    ngrams[ngram] = (ngrams[ngram] || 0) + 1;
-                }
-
-                const totalNGrams = Object.values(ngrams).reduce((a, b) => a + b, 0);
-                const uniqueNGrams = Object.keys(ngrams).length;
-                
-                return {
-                    total: totalNGrams,
-                    unique: uniqueNGrams,
-                    diversity: uniqueNGrams / totalNGrams,
-                    mostCommon: Object.entries(ngrams)
-                        .sort(([,a], [,b]) => b - a)
-                        .slice(0, 5)
-                };
-            }
-
-            // Punctuation analysis
-            analyzePunctuation(text) {
-                const punctuationMarks = ['.', ',', '!', '?', ';', ':', '"', "'", '(', ')'];
-                const counts = {};
-                
-                punctuationMarks.forEach(mark => {
-                    counts[mark] = (text.match(new RegExp('\\' + mark, 'g')) || []).length;
-                });
-
-                const total = Object.values(counts).reduce((a, b) => a + b, 0);
-                return { counts, total, density: total / text.length };
-            }
-
-            // Advanced AI detection scoring
-            calculateAIScore(text) {
-                const perplexity = this.calculatePerplexity(text);
-                const burstiness = this.calculateBurstiness(text);
-                const style = this.analyzeStyle(text);
-                const ngrams = this.analyzeNGrams(text);
-                const punctuation = this.analyzePunctuation(text);
-
-                // Scoring algorithm based on research findings
-                let aiScore = 0;
-
-                // Low perplexity indicates AI (more predictable)
-                if (perplexity < 8) aiScore += 30;
-                else if (perplexity < 12) aiScore += 15;
-
-                // Low burstiness indicates AI (more uniform sentences)
-                if (Math.abs(burstiness) < 0.1) aiScore += 25;
-                else if (Math.abs(burstiness) < 0.3) aiScore += 10;
-
-                // High type-token ratio might indicate AI (diverse vocabulary)
-                if (style.typeTokenRatio > 0.7) aiScore += 15;
-                else if (style.typeTokenRatio < 0.4) aiScore += 10;
-
-                // Very consistent sentence lengths indicate AI
-                if (style.avgWordsPerSentence > 15 && style.avgWordsPerSentence < 25) aiScore += 10;
-
-                // Low n-gram diversity indicates AI
-                if (ngrams.diversity < 0.8) aiScore += 20;
-
-                return Math.min(100, Math.max(0, aiScore));
-            }
-
-            // Utility function to tokenize text
-            tokenize(text) {
-                return text.toLowerCase()
-                    .replace(/[^\w\s]/g, ' ')
-                    .split(/\s+/)
-                    .filter(word => word.length > 0);
-            }
-        }
-
-        // Initialize analyzer
-        const analyzer = new TextAnalyzer();
-
-        // Sample texts for demonstration
-        const sampleTexts = {
-            human: `A literatura brasileira sempre me fascinou pela sua riqueza e diversidade. Machado de Assis, com sua ironia sutil, consegue capturar a essência da natureza humana de uma forma que poucos autores conseguem. Seus personagens são complexos, cheios de contradições - exatamente como somos nós. 
-
-Quando leio "Dom Casmurro", não consigo deixar de questionar: Capitu realmente traiu Bentinho? Ou seria tudo fruto de um ciúme doentio? Essa ambiguidade é genial! Machado nos força a questionar não apenas a narrativa, mas nossa própria percepção da realidade.`,
-
-            ai: `A inteligência artificial representa uma das mais significativas inovações tecnológicas da era contemporânea. Suas aplicações abrangem múltiplos setores, desde sistemas de recomendação em plataformas digitais até diagnósticos médicos assistidos por computador. Os algoritmos de machine learning permitem o processamento de grandes volumes de dados, identificando padrões complexos que seriam difíceis de detectar através de métodos tradicionais. Esta capacidade de análise automatizada tem revolucionado campos como finanças, saúde, educação e entretenimento, proporcionando soluções mais eficientes e personalizadas para diversos desafios contemporâneos.`
-        };
-
-        // Load sample text function
         function loadSampleText(type) {
-            const textInput = document.getElementById('mainTextInput');
+            const textInput = document.getElementById('advancedTextInput');
             textInput.value = sampleTexts[type];
             textInput.focus();
+            handleRealtimeAnalysis(textInput);
         }
 
-        // Main analysis function
         async function performAdvancedAnalysis() {
-            const textInput = document.getElementById('mainTextInput');
+            const textInput = document.getElementById('advancedTextInput');
             const text = textInput.value.trim();
             
             if (!text) {
@@ -1362,328 +1908,720 @@ Quando leio "Dom Casmurro", não consigo deixar de questionar: Capitu realmente 
             }
 
             // Show loading state
-            showLoading(true);
+            const button = document.getElementById('analyzeButtonText');
+            button.textContent = 'Analisando...';
             
-            // Simulate processing time for realism
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            try {
-                // Perform analysis
-                const perplexity = analyzer.calculatePerplexity(text);
-                const burstiness = analyzer.calculateBurstiness(text);
-                const style = analyzer.analyzeStyle(text);
-                const ngrams = analyzer.analyzeNGrams(text);
-                const punctuation = analyzer.analyzePunctuation(text);
-                const aiScore = analyzer.calculateAIScore(text);
-
-                // Display results
-                displayAnalysisResults({
-                    perplexity,
-                    burstiness,
-                    style,
-                    ngrams,
-                    punctuation,
-                    aiScore,
-                    text
-                });
-
-            } catch (error) {
-                console.error('Analysis error:', error);
-                alert('Erro durante a análise. Tente novamente.');
-            } finally {
-                showLoading(false);
-            }
+            // Perform analysis
+            const results = await analyzer.performCompleteAnalysis(text);
+            
+            // Display results
+            displayAdvancedResults(results);
+            
+            // Reset button
+            button.textContent = 'Análise Completa Avançada';
         }
 
-        // Display analysis results
-        function displayAnalysisResults(results) {
-            const container = document.getElementById('analysisResults');
-            const { perplexity, burstiness, style, ngrams, punctuation, aiScore, text } = results;
-
+        function displayAdvancedResults(results) {
+            const container = document.getElementById('advancedResults');
+            
             // Determine confidence level
             let confidenceClass, confidenceText;
-            if (aiScore > 70) {
+            if (results.aiProbability > 70) {
                 confidenceClass = 'confidence-high';
-                confidenceText = `Alto indício de texto gerado por IA (${aiScore.toFixed(1)}%)`;
-            } else if (aiScore > 40) {
+                confidenceText = `Alto indício de texto gerado por IA`;
+            } else if (results.aiProbability > 40) {
                 confidenceClass = 'confidence-medium';
-                confidenceText = `Resultado inconclusivo - análise humana recomendada (${aiScore.toFixed(1)}%)`;
+                confidenceText = `Resultado inconclusivo`;
             } else {
                 confidenceClass = 'confidence-low';
-                confidenceText = `Provavelmente texto humano (${aiScore.toFixed(1)}% probabilidade IA)`;
+                confidenceText = `Provavelmente texto humano`;
             }
+
+            // Find most likely model
+            const modelScores = Object.entries(results.modelSignatures);
+            const mostLikelyModel = modelScores.reduce((a, b) => a[1] > b[1] ? a : b);
 
             container.innerHTML = `
                 <div class="confidence-indicator ${confidenceClass}">
-                    <h3>🎯 Resultado da Análise</h3>
+                    <h3>🎯 Resultado da Análise Avançada</h3>
+                    <div class="confidence-meter">
+                        <svg class="confidence-circle" viewBox="0 0 200 200">
+                            <circle cx="100" cy="100" r="90" fill="none" stroke="#e0e0e0" stroke-width="20"/>
+                            <circle cx="100" cy="100" r="90" fill="none" stroke="url(#gradient)" stroke-width="20"
+                                stroke-dasharray="${results.aiProbability * 5.65} 565"
+                                transform="rotate(-90 100 100)"/>
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="confidence-value">${results.aiProbability.toFixed(0)}%</div>
+                    </div>
                     <p>${confidenceText}</p>
+                    <p style="opacity: 0.8;">Confiança da análise: ${results.confidence.toFixed(0)}%</p>
                 </div>
 
                 <div class="results-summary">
                     <div class="metric-card">
-                        <div class="metric-value">${perplexity.toFixed(2)}</div>
+                        <div class="metric-value">${results.perplexity.toFixed(2)}</div>
                         <div class="metric-label">Perplexidade</div>
-                        <div class="metric-description">Previsibilidade das palavras</div>
+                        <div class="metric-description">Previsibilidade textual</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-value">${Math.abs(burstiness).toFixed(3)}</div>
-                        <div class="metric-label">Burstiness</div>
-                        <div class="metric-description">Variação no comprimento das frases</div>
+                        <div class="metric-value">${results.entropy.toFixed(2)}</div>
+                        <div class="metric-label">Entropia</div>
+                        <div class="metric-description">Diversidade informacional</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-value">${style.typeTokenRatio.toFixed(3)}</div>
-                        <div class="metric-label">Type-Token Ratio</div>
-                        <div class="metric-description">Diversidade vocabular</div>
+                        <div class="metric-value">${(results.coherence * 100).toFixed(1)}%</div>
+                        <div class="metric-label">Coerência</div>
+                        <div class="metric-description">Fluxo semântico</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-value">${ngrams.diversity.toFixed(3)}</div>
-                        <div class="metric-label">Diversidade N-gram</div>
-                        <div class="metric-description">Variação em sequências de palavras</div>
+                        <div class="metric-value">${results.processingTime}ms</div>
+                        <div class="metric-label">Tempo</div>
+                        <div class="metric-description">Processamento</div>
                     </div>
                 </div>
 
                 <div class="chart-container">
-                    <h4>Distribuição de Probabilidade de IA</h4>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-label">
-                            <span>Humano</span>
-                            <span>IA</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${aiScore}%"></div>
-                        </div>
+                    <h4>📊 Assinatura de Modelos de IA</h4>
+                    <div class="chart-wrapper">
+                        <canvas id="modelSignatureChart"></canvas>
+                    </div>
+                    <p style="text-align: center; margin-top: 1rem; opacity: 0.8;">
+                        Modelo mais provável: <strong>${mostLikelyModel[0].toUpperCase()}</strong> 
+                        (${(mostLikelyModel[1] * 100).toFixed(1)}% correspondência)
+                    </p>
+                </div>
+
+                <div class="heatmap-container">
+                    <h4>🎨 Mapa de Calor - Padrões de IA</h4>
+                    <div class="heatmap-grid" id="patternHeatmap">
+                        ${generateHeatmap(results)}
                     </div>
                 </div>
 
                 <div class="detailed-analysis">
+                    <h4>🔬 Análise Detalhada por Algoritmo</h4>
+                    
                     <div class="analysis-section">
-                        <h4>📊 Análise Estilométrica Detalhada</h4>
+                        <h5>📝 Perfil Estilométrico</h5>
                         <div class="feature-list">
                             <div class="feature-item">
-                                <strong>Palavras Totais:</strong> ${style.totalWords}
+                                <strong>Comprimento médio palavra:</strong> ${results.stylometry.avgWordLength.toFixed(1)} chars
                             </div>
                             <div class="feature-item">
-                                <strong>Palavras Únicas:</strong> ${style.uniqueWords}
+                                <strong>Type-Token Ratio:</strong> ${results.stylometry.typeTokenRatio.toFixed(3)}
                             </div>
                             <div class="feature-item">
-                                <strong>Sentenças:</strong> ${style.sentences}
+                                <strong>Yule's K:</strong> ${results.stylometry.yuleK.toFixed(2)}
                             </div>
                             <div class="feature-item">
-                                <strong>Palavras/Sentença:</strong> ${style.avgWordsPerSentence.toFixed(1)}
-                            </div>
-                            <div class="feature-item">
-                                <strong>Palavras Funcionais:</strong> ${(style.functionWordRatio * 100).toFixed(1)}%
-                            </div>
-                            <div class="feature-item">
-                                <strong>Tamanho Médio Palavra:</strong> ${style.avgWordLength.toFixed(1)} chars
+                                <strong>Simpson's D:</strong> ${results.stylometry.simpsonD.toFixed(4)}
                             </div>
                         </div>
                     </div>
 
                     <div class="analysis-section">
-                        <h4>🔤 Análise de N-gramas</h4>
+                        <h5>💧 Detecção de Watermarks</h5>
                         <div class="feature-list">
-                            <div class="feature-item">
-                                <strong>Total de Bigramas:</strong> ${ngrams.total}
-                            </div>
-                            <div class="feature-item">
-                                <strong>Bigramas Únicos:</strong> ${ngrams.unique}
-                            </div>
                             <div class="feature-item" style="grid-column: 1 / -1;">
-                                <strong>Bigramas Mais Comuns:</strong> ${ngrams.mostCommon.map(([gram, count]) => 
-                                    `"${gram}" (${count}x)`).join(', ')}
+                                <strong>Status:</strong> ${results.watermarks.detected ? 
+                                    '⚠️ Watermarks detectados' : '✅ Nenhum watermark detectado'}
+                            </div>
+                            <div class="feature-item">
+                                <strong>Token Bias:</strong> ${(results.watermarks.indicators.tokenBias.confidence * 100).toFixed(1)}%
+                            </div>
+                            <div class="feature-item">
+                                <strong>Padrões Ocultos:</strong> ${(results.watermarks.indicators.hiddenPatterns.confidence * 100).toFixed(1)}%
                             </div>
                         </div>
                     </div>
 
                     <div class="analysis-section">
-                        <h4>✍️ Análise de Pontuação</h4>
+                        <h5>🧠 Complexidade Sintática</h5>
                         <div class="feature-list">
                             <div class="feature-item">
-                                <strong>Densidade:</strong> ${(punctuation.density * 100).toFixed(2)}%
+                                <strong>Cláusulas/sentença:</strong> ${results.syntacticComplexity.avgClauseCount.toFixed(2)}
                             </div>
                             <div class="feature-item">
-                                <strong>Pontos:</strong> ${punctuation.counts['.']}
+                                <strong>Índice subordinação:</strong> ${results.syntacticComplexity.subordinationIndex.toFixed(2)}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analysis-section">
+                        <h5>😊 Tom Emocional</h5>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <strong>Balanço emocional:</strong> ${results.emotionalTone.balance > 0 ? '😊 Positivo' : 
+                                    results.emotionalTone.balance < 0 ? '😔 Negativo' : '😐 Neutro'}
                             </div>
                             <div class="feature-item">
-                                <strong>Vírgulas:</strong> ${punctuation.counts[',']}
-                            </div>
-                            <div class="feature-item">
-                                <strong>Exclamações:</strong> ${punctuation.counts['!']}
-                            </div>
-                            <div class="feature-item">
-                                <strong>Interrogações:</strong> ${punctuation.counts['?']}
-                            </div>
-                            <div class="feature-item">
-                                <strong>Aspas:</strong> ${punctuation.counts['"']}
+                                <strong>Consistência:</strong> ${(results.emotionalTone.consistency * 100).toFixed(1)}%
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div style="margin-top: 2rem; padding: 1.5rem; background: #f0f9ff; border-radius: 10px; border-left: 4px solid var(--primary-color);">
-                    <h4 style="color: var(--primary-color); margin-bottom: 1rem;">💡 Interpretação dos Resultados</h4>
-                    <ul style="color: #374151; line-height: 1.8;">
-                        <li><strong>Perplexidade baixa (&lt;8):</strong> Indica texto mais previsível, característico de IA</li>
-                        <li><strong>Burstiness baixa (&lt;0.1):</strong> Sentenças muito uniformes, típico de modelos de linguagem</li>
-                        <li><strong>Type-Token Ratio alto (&gt;0.7):</strong> Vocabulário muito diverso, pode indicar geração artificial</li>
-                        <li><strong>Baixa diversidade de n-gramas (&lt;0.8):</strong> Padrões repetitivos em sequências de palavras</li>
-                    </ul>
+                <div class="export-options">
+                    <button class="export-btn" onclick="analyzer.exportResults(${JSON.stringify(results)}, 'json')">
+                        <span>📥</span> Exportar JSON
+                    </button>
+                    <button class="export-btn" onclick="analyzer.exportResults(${JSON.stringify(results)}, 'pdf')">
+                        <span>📄</span> Exportar PDF
+                    </button>
+                    <button class="export-btn" onclick="shareResults()">
+                        <span>🔗</span> Compartilhar
+                    </button>
                 </div>
             `;
 
+            // Create model signature chart
+            createModelSignatureChart(results.modelSignatures);
+            
             container.style.display = 'block';
             container.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Show/hide loading state
-        function showLoading(show) {
-            const button = document.getElementById('analyzeButtonText');
-            const spinner = document.getElementById('loadingSpinner');
+        function generateHeatmap(results) {
+            const metrics = [
+                { name: 'Perplexidade', value: 1 - Math.min(results.perplexity / 20, 1) },
+                { name: 'Burstiness', value: 1 - Math.abs(results.burstiness.burstiness) },
+                { name: 'Entropia', value: 1 - Math.min(results.entropy / 5, 1) },
+                { name: 'Coerência', value: results.coherence },
+                { name: 'Watermarks', value: results.watermarks.confidence },
+                { name: 'GPT-4', value: results.modelSignatures.gpt4 },
+                { name: 'Claude', value: results.modelSignatures.claude },
+                { name: 'Gemini', value: results.modelSignatures.gemini },
+                { name: 'Complexidade', value: Math.min(results.syntacticComplexity.avgClauseCount / 3, 1) },
+                { name: 'N-gramas', value: results.ngramAnalysis.diversity },
+                { name: 'Temporal', value: results.temporalPatterns.consistency },
+                { name: 'Emocional', value: results.emotionalTone.consistency }
+            ];
+
+            return metrics.map(metric => {
+                const intensity = metric.value;
+                const color = `hsl(${280 - intensity * 100}, 70%, ${50 + intensity * 20}%)`;
+                
+                return `
+                    <div class="heatmap-cell" 
+                         style="background: ${color};"
+                         data-tooltip="${metric.name}: ${(metric.value * 100).toFixed(1)}%">
+                        ${(metric.value * 100).toFixed(0)}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function createModelSignatureChart(signatures) {
+            const ctx = document.getElementById('modelSignatureChart');
+            if (!ctx) return;
+
+            new Chart(ctx.getContext('2d'), {
+                type: 'radar',
+                data: {
+                    labels: Object.keys(signatures).map(s => s.toUpperCase()),
+                    datasets: [{
+                        label: 'Correspondência com Modelo',
+                        data: Object.values(signatures).map(v => v * 100),
+                        borderColor: 'rgb(102, 126, 234)',
+                        backgroundColor: 'rgba(102, 126, 234, 0.2)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        // Real-time analysis
+        let realtimeTimeout;
+        function handleRealtimeAnalysis(input) {
+            clearTimeout(realtimeTimeout);
+            realtimeTimeout = setTimeout(() => {
+                if (input.value.trim().length > 50) {
+                    performQuickAnalysis(input.value);
+                }
+            }, 500);
+        }
+
+        async function performQuickAnalysis(text) {
+            const results = await analyzer.performCompleteAnalysis(text);
+            updateRealtimeIndicators(results);
+        }
+
+        function updateRealtimeIndicators(results) {
+            // Update any real-time indicators here
+            console.log('Real-time analysis:', results.aiProbability);
+        }
+
+        // Initialize theme
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set theme from localStorage
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+
+            // Animate numbers
+            animateNumbers();
+
+            // Initialize particles
+            initParticles();
+        });
+
+        function animateNumbers() {
+            const numbers = document.querySelectorAll('.stat-number');
             
-            if (show) {
-                button.textContent = 'Analisando...';
-                spinner.style.display = 'inline-block';
-            } else {
-                button.textContent = 'Analisar Texto Avançado';
-                spinner.style.display = 'none';
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const target = parseInt(entry.target.getAttribute('data-target'));
+                        const element = entry.target;
+                        
+                        let current = 0;
+                        const increment = target / 50;
+                        const timer = setInterval(() => {
+                            current += increment;
+                            if (current >= target) {
+                                current = target;
+                                clearInterval(timer);
+                            }
+                            element.textContent = Math.floor(current);
+                        }, 30);
+                        
+                        observer.unobserve(element);
+                    }
+                });
+            });
+            
+            numbers.forEach(number => observer.observe(number));
+        }
+
+        function initParticles() {
+            const canvas = document.getElementById('particles-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const particles = [];
+            const particleCount = 50;
+            
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                    this.radius = Math.random() * 2 + 1;
+                    this.opacity = Math.random() * 0.5 + 0.3;
+                }
+                
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    
+                    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+                }
+                
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(102, 126, 234, ${this.opacity})`;
+                    ctx.fill();
+                }
             }
-        }
-
-        // Clear analysis
-        function clearAnalysis() {
-            document.getElementById('mainTextInput').value = '';
-            document.getElementById('analysisResults').style.display = 'none';
-        }
-
-        // Compare texts function
-        function compareTexts() {
-            const textA = document.getElementById('textA').value.trim();
-            const textB = document.getElementById('textB').value.trim();
             
-            if (!textA || !textB) {
-                alert('Por favor, insira ambos os textos para comparação.');
-                return;
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
             }
-
-            const analysisA = {
-                perplexity: analyzer.calculatePerplexity(textA),
-                burstiness: analyzer.calculateBurstiness(textA),
-                style: analyzer.analyzeStyle(textA),
-                aiScore: analyzer.calculateAIScore(textA)
-            };
-
-            const analysisB = {
-                perplexity: analyzer.calculatePerplexity(textB),
-                burstiness: analyzer.calculateBurstiness(textB),
-                style: analyzer.analyzeStyle(textB),
-                aiScore: analyzer.calculateAIScore(textB)
-            };
-
-            displayComparisonResults(analysisA, analysisB);
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+                
+                // Draw connections
+                particles.forEach((p1, i) => {
+                    particles.slice(i + 1).forEach(p2 => {
+                        const distance = Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+                        if (distance < 100) {
+                            ctx.beginPath();
+                            ctx.moveTo(p1.x, p1.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = `rgba(102, 126, 234, ${0.1 * (1 - distance / 100)})`;
+                            ctx.stroke();
+                        }
+                    });
+                });
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+            
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
         }
 
-        // Display comparison results
-        function displayComparisonResults(analysisA, analysisB) {
-            const container = document.getElementById('comparisonResults');
+        // Real-time analysis for the real-time tab
+        function performRealtimeAnalysis(input) {
+            const text = input.value.trim();
+            if (!text) return;
             
-            container.innerHTML = `
+            // Quick analysis for real-time feedback
+            const quickResults = {
+                perplexity: analyzer.calculatePerplexity(text),
+                burstiness: analyzer.calculateBurstiness(text),
+                entropy: analyzer.calculateEntropy(text),
+                aiScore: analyzer.calculateFinalAIScore({
+                    perplexity: analyzer.calculatePerplexity(text),
+                    burstiness: analyzer.calculateBurstiness(text),
+                    entropy: analyzer.calculateEntropy(text),
+                    coherence: 0.5,
+                    modelSignatures: { gpt4: 0, claude: 0, gemini: 0 },
+                    watermarks: { detected: false, confidence: 0 }
+                })
+            };
+            
+            // Update real-time chart
+            if (analyzer.realtimeChart) {
+                const chart = analyzer.realtimeChart;
+                const labels = chart.data.labels;
+                const data = chart.data.datasets[0].data;
+                
+                // Add new data point
+                labels.push(new Date().toLocaleTimeString());
+                data.push(quickResults.aiScore);
+                
+                // Keep only last 20 points
+                if (labels.length > 20) {
+                    labels.shift();
+                    data.shift();
+                }
+                
+                chart.update();
+            }
+            
+            // Update metrics display
+            document.getElementById('realtimeMetrics').innerHTML = `
                 <div class="results-summary">
-                    <div class="metric-card" style="border-left: 4px solid var(--primary-color);">
-                        <div class="metric-value">${analysisA.aiScore.toFixed(1)}%</div>
-                        <div class="metric-label">Probabilidade IA - Texto A</div>
+                    <div class="metric-card">
+                        <div class="metric-value">${quickResults.aiScore.toFixed(1)}%</div>
+                        <div class="metric-label">Probabilidade IA</div>
                     </div>
-                    <div class="metric-card" style="border-left: 4px solid var(--secondary-color);">
-                        <div class="metric-value">${analysisB.aiScore.toFixed(1)}%</div>
-                        <div class="metric-label">Probabilidade IA - Texto B</div>
+                    <div class="metric-card">
+                        <div class="metric-value">${quickResults.perplexity.toFixed(2)}</div>
+                        <div class="metric-label">Perplexidade</div>
                     </div>
-                </div>
-
-                <div class="detailed-analysis">
-                    <h4>📊 Comparação Detalhada</h4>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Métrica</th>
-                                    <th>Texto A</th>
-                                    <th>Texto B</th>
-                                    <th>Diferença</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Perplexidade</td>
-                                    <td>${analysisA.perplexity.toFixed(2)}</td>
-                                    <td>${analysisB.perplexity.toFixed(2)}</td>
-                                    <td>${Math.abs(analysisA.perplexity - analysisB.perplexity).toFixed(2)}</td>
-                                </tr>
-                                <tr>
-                                    <td>Burstiness</td>
-                                    <td>${Math.abs(analysisA.burstiness).toFixed(3)}</td>
-                                    <td>${Math.abs(analysisB.burstiness).toFixed(3)}</td>
-                                    <td>${Math.abs(Math.abs(analysisA.burstiness) - Math.abs(analysisB.burstiness)).toFixed(3)}</td>
-                                </tr>
-                                <tr>
-                                    <td>Type-Token Ratio</td>
-                                    <td>${analysisA.style.typeTokenRatio.toFixed(3)}</td>
-                                    <td>${analysisB.style.typeTokenRatio.toFixed(3)}</td>
-                                    <td>${Math.abs(analysisA.style.typeTokenRatio - analysisB.style.typeTokenRatio).toFixed(3)}</td>
-                                </tr>
-                                <tr>
-                                    <td>Palavras por Sentença</td>
-                                    <td>${analysisA.style.avgWordsPerSentence.toFixed(1)}</td>
-                                    <td>${analysisB.style.avgWordsPerSentence.toFixed(1)}</td>
-                                    <td>${Math.abs(analysisA.style.avgWordsPerSentence - analysisB.style.avgWordsPerSentence).toFixed(1)}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="metric-card">
+                        <div class="metric-value">${quickResults.entropy.toFixed(2)}</div>
+                        <div class="metric-label">Entropia</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${text.length}</div>
+                        <div class="metric-label">Caracteres</div>
                     </div>
                 </div>
             `;
+        }
 
+        // Compare multiple texts
+        async function compareMultipleTexts() {
+            const textA = document.getElementById('textA').value.trim();
+            const textB = document.getElementById('textB').value.trim();
+            const textC = document.getElementById('textC').value.trim();
+            
+            const texts = [textA, textB, textC].filter(t => t.length > 0);
+            
+            if (texts.length < 2) {
+                alert('Por favor, insira pelo menos 2 textos para comparação.');
+                return;
+            }
+            
+            const results = await Promise.all(texts.map(text => 
+                analyzer.performCompleteAnalysis(text)
+            ));
+            
+            displayComparisonResults(results);
+        }
+
+        function displayComparisonResults(results) {
+            const container = document.getElementById('comparisonResults');
+            
+            // Create comparison chart
+            const chartId = 'comparisonRadarChart';
+            
+            container.innerHTML = `
+                <div class="chart-container">
+                    <h4>📊 Comparação Visual dos Textos</h4>
+                    <div class="chart-wrapper">
+                        <canvas id="${chartId}"></canvas>
+                    </div>
+                </div>
+                
+                <div class="results-summary" style="margin-top: 2rem;">
+                    ${results.map((result, index) => `
+                        <div class="metric-card" style="border-left: 4px solid ${['var(--primary-color)', 'var(--secondary-color)', 'var(--accent-color)'][index]};">
+                            <h4>Texto ${String.fromCharCode(65 + index)}</h4>
+                            <div class="metric-value">${result.aiProbability.toFixed(1)}%</div>
+                            <div class="metric-label">Probabilidade IA</div>
+                            <div style="margin-top: 1rem; font-size: 0.9rem;">
+                                <strong>Modelo mais provável:</strong> ${
+                                    Object.entries(result.modelSignatures)
+                                        .reduce((a, b) => a[1] > b[1] ? a : b)[0].toUpperCase()
+                                }
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="detailed-analysis">
+                    <h4>📈 Análise Comparativa Detalhada</h4>
+                    <table style="width: 100%; margin-top: 1rem;">
+                        <thead>
+                            <tr>
+                                <th>Métrica</th>
+                                ${results.map((_, i) => `<th>Texto ${String.fromCharCode(65 + i)}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Perplexidade</strong></td>
+                                ${results.map(r => `<td>${r.perplexity.toFixed(2)}</td>`).join('')}
+                            </tr>
+                            <tr>
+                                <td><strong>Entropia</strong></td>
+                                ${results.map(r => `<td>${r.entropy.toFixed(2)}</td>`).join('')}
+                            </tr>
+                            <tr>
+                                <td><strong>Coerência</strong></td>
+                                ${results.map(r => `<td>${(r.coherence * 100).toFixed(1)}%</td>`).join('')}
+                            </tr>
+                            <tr>
+                                <td><strong>Watermarks</strong></td>
+                                ${results.map(r => `<td>${r.watermarks.detected ? '⚠️ Detectado' : '✅ Limpo'}</td>`).join('')}
+                            </tr>
+                            <tr>
+                                <td><strong>Complexidade Sintática</strong></td>
+                                ${results.map(r => `<td>${r.syntacticComplexity.avgClauseCount.toFixed(2)}</td>`).join('')}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Create comparison radar chart
+            setTimeout(() => {
+                const ctx = document.getElementById(chartId);
+                if (ctx) {
+                    new Chart(ctx.getContext('2d'), {
+                        type: 'radar',
+                        data: {
+                            labels: ['Perplexidade', 'Entropia', 'Coerência', 'Complexidade', 'IA Score'],
+                            datasets: results.map((result, index) => ({
+                                label: `Texto ${String.fromCharCode(65 + index)}`,
+                                data: [
+                                    Math.min(result.perplexity / 20, 1) * 100,
+                                    Math.min(result.entropy / 5, 1) * 100,
+                                    result.coherence * 100,
+                                    Math.min(result.syntacticComplexity.avgClauseCount / 3, 1) * 100,
+                                    result.aiProbability
+                                ],
+                                borderColor: ['rgb(102, 126, 234)', 'rgb(118, 75, 162)', 'rgb(240, 147, 251)'][index],
+                                backgroundColor: ['rgba(102, 126, 234, 0.2)', 'rgba(118, 75, 162, 0.2)', 'rgba(240, 147, 251, 0.2)'][index]
+                            }))
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                r: {
+                                    beginAtZero: true,
+                                    max: 100
+                                }
+                            }
+                        }
+                    });
+                }
+            }, 100);
+            
             container.style.display = 'block';
         }
 
-        // Load comparison samples
-        function loadComparisonSamples() {
-            document.getElementById('textA').value = sampleTexts.human;
-            document.getElementById('textB').value = sampleTexts.ai;
+        // Watermark detection
+        async function detectWatermarks() {
+            const text = document.getElementById('watermarkInput').value.trim();
+            if (!text) {
+                alert('Por favor, insira um texto para análise de watermarks.');
+                return;
+            }
+            
+            const results = await analyzer.performCompleteAnalysis(text);
+            displayWatermarkResults(results);
         }
 
-        // Batch analysis function
-        function performBatchAnalysis() {
+        function displayWatermarkResults(results) {
+            const container = document.getElementById('watermarkResults');
+            const watermarks = results.watermarks;
+            
+            container.innerHTML = `
+                <div class="confidence-indicator ${watermarks.detected ? 'confidence-high' : 'confidence-low'}">
+                    <h3>${watermarks.detected ? '⚠️ Watermarks Detectados' : '✅ Nenhum Watermark Detectado'}</h3>
+                    <p>Confiança da análise: ${(watermarks.confidence * 100).toFixed(1)}%</p>
+                </div>
+                
+                <div class="detailed-analysis">
+                    <h4>🔍 Análise Detalhada de Watermarks</h4>
+                    
+                    <div class="analysis-section">
+                        <h5>Token Bias Analysis</h5>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-label">
+                                <span>Token Bias</span>
+                                <span>${(watermarks.indicators.tokenBias.confidence * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${watermarks.indicators.tokenBias.confidence * 100}%"></div>
+                            </div>
+                        </div>
+                        <p style="margin-top: 0.5rem; opacity: 0.8;">
+                            Tokens únicos (posições pares): ${watermarks.indicators.tokenBias.details.evenUnique}<br>
+                            Tokens únicos (posições ímpares): ${watermarks.indicators.tokenBias.details.oddUnique}
+                        </p>
+                    </div>
+                    
+                    <div class="analysis-section">
+                        <h5>Padrões Ocultos</h5>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-label">
+                                <span>Padrões Detectados</span>
+                                <span>${(watermarks.indicators.hiddenPatterns.confidence * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${watermarks.indicators.hiddenPatterns.confidence * 100}%"></div>
+                            </div>
+                        </div>
+                        ${watermarks.indicators.hiddenPatterns.patterns.length > 0 ? `
+                            <ul style="margin-top: 0.5rem;">
+                                ${watermarks.indicators.hiddenPatterns.patterns.map(p => `<li>${p}</li>`).join('')}
+                            </ul>
+                        ` : '<p style="margin-top: 0.5rem; opacity: 0.8;">Nenhum padrão matemático detectado</p>'}
+                    </div>
+                    
+                    <div class="analysis-section">
+                        <h5>Anomalias Estatísticas</h5>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-label">
+                                <span>Anomalias</span>
+                                <span>${(watermarks.indicators.statisticalAnomalies.confidence * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${watermarks.indicators.statisticalAnomalies.confidence * 100}%"></div>
+                            </div>
+                        </div>
+                        <p style="margin-top: 0.5rem; opacity: 0.8;">
+                            Variância: ${watermarks.indicators.statisticalAnomalies.variance.toFixed(2)}<br>
+                            Média: ${watermarks.indicators.statisticalAnomalies.mean.toFixed(2)}
+                        </p>
+                    </div>
+                    
+                    <div class="analysis-section">
+                        <h5>Caracteres Unicode Invisíveis</h5>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-label">
+                                <span>Unicode Suspeito</span>
+                                <span>${watermarks.indicators.unicodeAnomalies.count} encontrado(s)</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${watermarks.indicators.unicodeAnomalies.confidence * 100}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-light); border-radius: 10px;">
+                    <h4>💡 O que são Watermarks?</h4>
+                    <p>Watermarks em texto gerado por IA são marcações sutis inseridas durante a geração que permitem identificar o conteúdo como artificial. Eles podem incluir:</p>
+                    <ul>
+                        <li><strong>Viés de Token:</strong> Preferência sutil por certas palavras em posições específicas</li>
+                        <li><strong>Padrões Matemáticos:</strong> Sequências ocultas em comprimentos de palavras ou frases</li>
+                        <li><strong>Caracteres Invisíveis:</strong> Unicode especial que não aparece visualmente</li>
+                        <li><strong>Distribuições Anômalas:</strong> Padrões estatísticos não naturais</li>
+                    </ul>
+                </div>
+            `;
+            
+            container.style.display = 'block';
+        }
+
+        // Generate watermarked text
+        function generateWatermarkedText() {
+            const input = document.getElementById('watermarkInput');
+            
+            // Simple watermark generation example
+            const originalText = "Este é um exemplo de texto com watermark invisível inserido pelo sistema.";
+            const watermarkedText = originalText.replace(/ /g, (match, offset) => {
+                // Add zero-width space at specific positions
+                return offset % 5 === 0 ? match + '\u200B' : match;
+            });
+            
+            input.value = watermarkedText;
+            
+            alert('Texto com watermark gerado! O watermark é invisível mas pode ser detectado pela análise.');
+        }
+
+        // Batch analysis
+        async function performBatchAnalysis() {
             const batchInput = document.getElementById('batchInput').value.trim();
             if (!batchInput) {
                 alert('Por favor, insira textos para análise em lote.');
                 return;
             }
-
-            const texts = batchInput.split('\n').filter(line => line.trim().length > 0);
+            
+            const texts = batchInput.split('\n\n').filter(text => text.trim().length > 0);
+            
             if (texts.length < 2) {
-                alert('Por favor, insira pelo menos 2 textos (um por linha).');
+                alert('Por favor, insira pelo menos 2 textos separados por linha em branco.');
                 return;
             }
-
-            const results = texts.map((text, index) => {
-                const analysis = {
+            
+            const results = await Promise.all(texts.map(async (text, index) => {
+                const analysis = await analyzer.performCompleteAnalysis(text);
+                return {
                     index: index + 1,
                     text: text.substring(0, 100) + (text.length > 100 ? '...' : ''),
-                    aiScore: analyzer.calculateAIScore(text),
-                    perplexity: analyzer.calculatePerplexity(text),
-                    burstiness: analyzer.calculateBurstiness(text)
+                    analysis
                 };
-                return analysis;
-            });
-
+            }));
+            
             displayBatchResults(results);
         }
 
-        // Display batch results
         function displayBatchResults(results) {
             const container = document.getElementById('batchResults');
             
-            const avgAIScore = results.reduce((sum, r) => sum + r.aiScore, 0) / results.length;
+            const avgAIScore = results.reduce((sum, r) => sum + r.analysis.aiProbability, 0) / results.length;
+            const aiTexts = results.filter(r => r.analysis.aiProbability > 50).length;
+            const humanTexts = results.filter(r => r.analysis.aiProbability <= 50).length;
             
             container.innerHTML = `
                 <div class="results-summary">
@@ -1696,100 +2634,337 @@ Quando leio "Dom Casmurro", não consigo deixar de questionar: Capitu realmente 
                         <div class="metric-label">Média Probabilidade IA</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-value">${results.filter(r => r.aiScore > 50).length}</div>
+                        <div class="metric-value">${aiTexts}</div>
                         <div class="metric-label">Prováveis Textos IA</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-value">${results.filter(r => r.aiScore <= 50).length}</div>
+                        <div class="metric-value">${humanTexts}</div>
                         <div class="metric-label">Prováveis Textos Humanos</div>
                     </div>
                 </div>
-
+                
+                <div class="chart-container">
+                    <h4>📊 Distribuição dos Resultados</h4>
+                    <div class="chart-wrapper">
+                        <canvas id="batchDistributionChart"></canvas>
+                    </div>
+                </div>
+                
                 <div class="detailed-analysis">
-                    <h4>📊 Resultados Individuais</h4>
-                    <div class="table-container">
-                        <table>
+                    <h4>📋 Resultados Detalhados</h4>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; margin-top: 1rem;">
                             <thead>
                                 <tr>
                                     <th>#</th>
                                     <th>Texto (preview)</th>
-                                    <th>Probabilidade IA</th>
-                                    <th>Perplexidade</th>
-                                    <th>Burstiness</th>
-                                    <th>Classificação</th>
+                                    <th>Prob. IA</th>
+                                    <th>Confiança</th>
+                                    <th>Modelo Provável</th>
+                                    <th>Watermarks</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                ${results.map(result => `
-                                    <tr>
-                                        <td>${result.index}</td>
-                                        <td style="max-width: 200px;">${result.text}</td>
-                                        <td style="font-weight: bold; color: ${result.aiScore > 50 ? 'var(--danger-color)' : 'var(--success-color)'}">
-                                            ${result.aiScore.toFixed(1)}%
-                                        </td>
-                                        <td>${result.perplexity.toFixed(2)}</td>
-                                        <td>${Math.abs(result.burstiness).toFixed(3)}</td>
-                                        <td>
-                                            <span style="padding: 0.2rem 0.5rem; border-radius: 15px; font-size: 0.8rem; font-weight: bold; 
-                                                    background: ${result.aiScore > 70 ? '#fee2e2; color: #991b1b' : 
-                                                                 result.aiScore > 40 ? '#fffbeb; color: #92400e' : 
-                                                                 '#f0fdf4; color: #166534'}">
-                                                ${result.aiScore > 70 ? 'IA' : result.aiScore > 40 ? 'Incerto' : 'Humano'}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                `).join('')}
+                                ${results.map(result => {
+                                    const mostLikelyModel = Object.entries(result.analysis.modelSignatures)
+                                        .reduce((a, b) => a[1] > b[1] ? a : b);
+                                    
+                                    return `
+                                        <tr>
+                                            <td>${result.index}</td>
+                                            <td style="max-width: 300px;">${result.text}</td>
+                                            <td style="font-weight: bold; color: ${
+                                                result.analysis.aiProbability > 70 ? 'var(--danger-color)' : 
+                                                result.analysis.aiProbability > 40 ? 'var(--warning-color)' :
+                                                'var(--success-color)'
+                                            }">
+                                                ${result.analysis.aiProbability.toFixed(1)}%
+                                            </td>
+                                            <td>${result.analysis.confidence.toFixed(0)}%</td>
+                                            <td>${mostLikelyModel[0].toUpperCase()} (${(mostLikelyModel[1] * 100).toFixed(0)}%)</td>
+                                            <td>${result.analysis.watermarks.detected ? '⚠️ Sim' : '✅ Não'}</td>
+                                            <td>
+                                                <span style="padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.8rem; font-weight: bold; 
+                                                        background: ${
+                                                            result.analysis.aiProbability > 70 ? '#fee2e2; color: #991b1b' : 
+                                                            result.analysis.aiProbability > 40 ? '#fffbeb; color: #92400e' : 
+                                                            '#f0fdf4; color: #166534'
+                                                        }">
+                                                    ${
+                                                        result.analysis.aiProbability > 70 ? 'IA' : 
+                                                        result.analysis.aiProbability > 40 ? 'Incerto' : 
+                                                        'Humano'
+                                                    }
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
                             </tbody>
                         </table>
                     </div>
                 </div>
+                
+                <div class="export-options" style="margin-top: 2rem;">
+                    <button class="export-btn" onclick="exportBatchResults()">
+                        <span>📊</span> Exportar Relatório Completo
+                    </button>
+                </div>
             `;
-
+            
+            // Create distribution chart
+            setTimeout(() => {
+                const ctx = document.getElementById('batchDistributionChart');
+                if (ctx) {
+                    new Chart(ctx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: results.map(r => `Texto ${r.index}`),
+                            datasets: [{
+                                label: 'Probabilidade IA (%)',
+                                data: results.map(r => r.analysis.aiProbability),
+                                backgroundColor: results.map(r => 
+                                    r.analysis.aiProbability > 70 ? 'rgba(239, 68, 68, 0.6)' :
+                                    r.analysis.aiProbability > 40 ? 'rgba(245, 158, 11, 0.6)' :
+                                    'rgba(16, 185, 129, 0.6)'
+                                ),
+                                borderColor: results.map(r => 
+                                    r.analysis.aiProbability > 70 ? 'rgb(239, 68, 68)' :
+                                    r.analysis.aiProbability > 40 ? 'rgb(245, 158, 11)' :
+                                    'rgb(16, 185, 129)'
+                                ),
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100
+                                }
+                            }
+                        }
+                    });
+                }
+            }, 100);
+            
             container.style.display = 'block';
+        }
+
+        // Export batch results
+        function exportBatchResults() {
+            alert('Funcionalidade de exportação será implementada em breve! Por enquanto, você pode fazer uma captura de tela dos resultados.');
+        }
+
+        // Load comparison samples
+        function loadComparisonSamples() {
+            document.getElementById('textA').value = sampleTexts.human;
+            document.getElementById('textB').value = sampleTexts.gpt4;
+            document.getElementById('textC').value = sampleTexts.claude;
         }
 
         // Load batch samples
         function loadBatchSamples() {
             const samples = [
-                "A tecnologia blockchain revoluciona a forma como realizamos transações financeiras digitais.",
-                "Ontem fui ao mercado e encontrei minha vizinha. Que coincidência incrível! Conversamos sobre jardinagem.",
-                "Os algoritmos de inteligência artificial processam grandes volumes de dados para identificar padrões complexos.",
-                "Meu gato decidiu que 3h da manhã é o momento perfeito para praticar parkour pela casa. Dormir? Que conceito é esse?",
-                "A implementação de sistemas de machine learning requer considerações cuidadosas sobre qualidade dos dados e validação de modelos."
+                sampleTexts.human,
+                sampleTexts.gpt4,
+                sampleTexts.claude,
+                sampleTexts.gemini,
+                "A educação é a base fundamental para o desenvolvimento de qualquer sociedade. Através dela, indivíduos adquirem conhecimentos, habilidades e valores essenciais para a vida em comunidade.",
+                "Cara, ontem foi hilário! Tava eu lá no shopping, de boa, quando do nada encontro meu professor de matemática do colégio. O cara nem me reconheceu de primeira, mas quando viu, nossa, foi uma festa!"
             ];
             
-            document.getElementById('batchInput').value = samples.join('\n');
+            document.getElementById('batchInput').value = samples.join('\n\n');
         }
 
-        // Animate statistics numbers on load
-        document.addEventListener('DOMContentLoaded', () => {
-            const animateNumbers = () => {
-                document.querySelectorAll('.stat-number').forEach(stat => {
-                    const finalValue = stat.textContent;
-                    stat.textContent = '0';
-                    
-                    const observer = new IntersectionObserver((entries) => {
-                        entries.forEach(entry => {
-                            if (entry.isIntersecting) {
-                                const target = entry.target;
-                                const finalText = finalValue;
-                                
-                                setTimeout(() => {
-                                    target.textContent = finalText;
-                                    target.style.animation = 'pulse 0.5s ease-in-out';
-                                }, Math.random() * 500);
-                                
-                                observer.unobserve(target);
-                            }
-                        });
-                    });
-                    
-                    observer.observe(stat);
+        // Clear analysis
+        function clearAnalysis() {
+            document.getElementById('advancedTextInput').value = '';
+            document.getElementById('advancedResults').style.display = 'none';
+        }
+
+        // Toggle history panel
+        function toggleHistory() {
+            const panel = document.getElementById('historyPanel');
+            panel.classList.toggle('open');
+        }
+
+        // Load history item
+        function loadHistoryItem(id) {
+            const item = analyzer.analysisHistory.find(h => h.id === id);
+            if (item) {
+                alert(`Análise de ${new Date(item.timestamp).toLocaleString()}\nProbabilidade IA: ${item.aiProbability.toFixed(1)}%`);
+            }
+        }
+
+        // Share results
+        function shareResults() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Resultado da Análise de IA',
+                    text: 'Confira o resultado da análise de detecção de texto gerado por IA',
+                    url: window.location.href
+                }).catch(err => console.log('Erro ao compartilhar:', err));
+            } else {
+                // Fallback - copy to clipboard
+                const url = window.location.href;
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Link copiado para a área de transferência!');
                 });
-            };
-            
-            animateNumbers();
+            }
+        }
+
+        // Progress bar
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            const progressBar = document.getElementById('progressBar');
+            if (progressBar) {
+                progressBar.style.width = scrolled + '%';
+            }
         });
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add history panel styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .history-item {
+                padding: 1rem;
+                margin-bottom: 1rem;
+                background: var(--bg-light);
+                border-radius: 10px;
+                cursor: pointer;
+                transition: var(--transition);
+            }
+            
+            .history-item:hover {
+                transform: translateX(-5px);
+                box-shadow: 0 5px 15px var(--shadow-light);
+            }
+            
+            .history-time {
+                font-size: 0.8rem;
+                opacity: 0.7;
+                margin-bottom: 0.5rem;
+            }
+            
+            .history-preview {
+                font-size: 0.9rem;
+                margin-bottom: 0.5rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .history-score {
+                font-weight: bold;
+            }
+            
+            .cards-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 2rem;
+                margin: 2rem 0;
+            }
+            
+            .section-title {
+                font-size: 2.5rem;
+                text-align: center;
+                margin-bottom: 3rem;
+                background: var(--bg-gradient);
+                -webkit-background-clip: text;
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+                font-weight: bold;
+            }
+            
+            .btn-secondary {
+                background: var(--bg-light);
+                color: var(--text-light);
+                padding: 0.75rem 1.5rem;
+                border: 2px solid var(--border-light);
+                border-radius: 25px;
+                font-size: 0.9rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: var(--transition);
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .btn-secondary:hover {
+                background: var(--bg-gradient);
+                color: white;
+                border-color: transparent;
+                transform: translateY(-2px);
+            }
+            
+            .analysis-controls {
+                display: flex;
+                gap: 1rem;
+                margin-bottom: 2rem;
+                flex-wrap: wrap;
+                align-items: center;
+            }
+            
+            .feature-list {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+            
+            .feature-item {
+                background: var(--bg-light);
+                padding: 1rem;
+                border-radius: 10px;
+                border-left: 4px solid var(--primary-color);
+            }
+            
+            .analysis-section {
+                margin-bottom: 2rem;
+            }
+            
+            .analysis-section h4, .analysis-section h5 {
+                color: var(--primary-color);
+                margin-bottom: 1rem;
+            }
+            
+            .progress-container {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: rgba(255,255,255,0.3);
+                z-index: 1001;
+            }
+            
+            .page-progress-bar {
+                height: 100%;
+                background: var(--accent-color);
+                width: 0%;
+                transition: width 0.3s ease;
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
